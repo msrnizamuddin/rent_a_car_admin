@@ -1,5 +1,4 @@
-import Image from "next/image";
-
-export default function Home() {
-  return <div></div>;
+import Login from "@/app/(public)/login/page";
+export default function page() {
+  return <Login />;
 }
