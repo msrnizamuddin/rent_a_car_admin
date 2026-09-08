@@ -64,9 +64,11 @@ export default function DriverForm({ driverId }: DriverFormProps) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  // Set once a new driver has been created, so the "own vehicle" section
-  // (which needs a real driver id for ownerDriverId) can appear.
-  const [createdDriverId, setCreatedDriverId] = useState<string | null>(null);
+  // The driver's real id, once it exists — either passed in (edit mode)
+  // or set right after a successful create. Status control and the "own
+  // vehicle" section need this, so they stay on this same page and simply
+  // unlock once this is set, rather than navigating anywhere.
+  const [savedDriverId, setSavedDriverId] = useState<string | null>(driverId || null);
 
   useEffect(() => {
     if (!driverId || !token) return;
@@ -153,9 +155,9 @@ export default function DriverForm({ driverId }: DriverFormProps) {
     };
 
     try {
-      if (isEdit && driverId) {
+      if (savedDriverId) {
         await updateUser(
-          driverId,
+          savedDriverId,
           {
             fullName: form.name,
             mobileNumber: form.phone,
@@ -185,7 +187,9 @@ export default function DriverForm({ driverId }: DriverFormProps) {
           },
           token,
         );
-        setCreatedDriverId(created.id);
+        // Stay on this page — the status and own-vehicle sections below
+        // unlock now that a real driver id exists, instead of navigating.
+        setSavedDriverId(created.id);
       }
     } catch (err) {
       setError(
@@ -198,33 +202,6 @@ export default function DriverForm({ driverId }: DriverFormProps) {
 
   if (loading) {
     return <p className="text-sm text-slate-400">Loading driver…</p>;
-  }
-
-  // Create flow, phase 2: driver already exists — offer to register their
-  // own vehicle (needs a real driver id for ownerDriverId).
-  if (createdDriverId && !isEdit) {
-    return (
-      <div className="max-w-3xl">
-        <div className="mb-6">
-          <h1 className="text-xl font-semibold text-slate-900">Driver added</h1>
-          <p className="text-sm text-slate-500">
-            Optionally register a vehicle this driver personally owns.
-          </p>
-        </div>
-
-        <DriverOwnVehicle driverId={createdDriverId} />
-
-        <div className="flex items-center gap-3 pt-6">
-          <button
-            type="button"
-            onClick={() => router.push("/dashboard/drivers")}
-            className="h-11 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition"
-          >
-            Done
-          </button>
-        </div>
-      </div>
-    );
   }
 
   return (
@@ -320,7 +297,7 @@ export default function DriverForm({ driverId }: DriverFormProps) {
 
           <Field label="License number" icon={IdCard}>
             <input
-              required={!isEdit}
+              required={!savedDriverId}
               value={form.licenseNo}
               onChange={update("licenseNo")}
               placeholder="DL-XXXXXXX"
@@ -328,7 +305,7 @@ export default function DriverForm({ driverId }: DriverFormProps) {
             />
           </Field>
 
-          {!isEdit && (
+          {!savedDriverId && (
             <Field label="Temporary password" icon={Lock}>
               <input
                 required
@@ -349,8 +326,8 @@ export default function DriverForm({ driverId }: DriverFormProps) {
             <DocumentUpload
               label={form.idType === "passport" ? "Passport document" : "NID document"}
               category={form.idType}
-              ownerType={isEdit ? "user" : undefined}
-              ownerId={isEdit ? driverId : undefined}
+              ownerType={savedDriverId ? "user" : undefined}
+              ownerId={savedDriverId || undefined}
               value={idDoc}
               onUploaded={setIdDoc}
               onRemove={() => setIdDoc(null)}
@@ -358,8 +335,8 @@ export default function DriverForm({ driverId }: DriverFormProps) {
             <DocumentUpload
               label="Driving license document"
               category="driving_license"
-              ownerType={isEdit ? "user" : undefined}
-              ownerId={isEdit ? driverId : undefined}
+              ownerType={savedDriverId ? "user" : undefined}
+              ownerId={savedDriverId || undefined}
               value={licenseDoc}
               onUploaded={setLicenseDoc}
               onRemove={() => setLicenseDoc(null)}
@@ -375,7 +352,7 @@ export default function DriverForm({ driverId }: DriverFormProps) {
             disabled={submitting}
             className="h-11 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-sm font-semibold transition"
           >
-            {submitting ? "Saving..." : isEdit ? "Save changes" : "Save driver"}
+            {submitting ? "Saving..." : savedDriverId ? "Save changes" : "Save driver"}
           </button>
           <button
             type="button"
@@ -387,10 +364,10 @@ export default function DriverForm({ driverId }: DriverFormProps) {
         </div>
       </form>
 
-      {isEdit && driverId && (
+      {savedDriverId && (
         <div className="max-w-2xl mt-6 space-y-6">
-          <DriverStatusControl driverId={driverId} />
-          <DriverOwnVehicle driverId={driverId} />
+          <DriverStatusControl driverId={savedDriverId} />
+          <DriverOwnVehicle driverId={savedDriverId} />
         </div>
       )}
     </div>
