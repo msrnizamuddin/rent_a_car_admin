@@ -3,22 +3,45 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Search, Plus, Pencil } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 import { useUsers } from "@/hooks/useUsers";
-
-const statusStyle: Record<string, string> = {
-  active: "bg-green-50 text-green-600",
-  inactive: "bg-slate-100 text-slate-500",
-  suspended: "bg-amber-50 text-amber-600",
-  blocked: "bg-red-50 text-red-600",
-};
+import { updateAccountControl } from "@/services/authService";
+import { formatApiError } from "@/lib/errorMessages";
+import StatusBadgeSelect from "@/components/shared/StatusBadgeSelect";
+import { driverStatusStyle, centralStatusStyle } from "@/components/drivers/DriverStatusControl";
+import { DRIVER_STATUSES, CENTRAL_STATUSES } from "@/constants/user.constants";
 
 export default function DriverList() {
+  const { token } = useAuth();
   const [search, setSearch] = useState("");
-  const { users, pagination, loading, error } = useUsers({
+  const { users, pagination, loading, error, reload } = useUsers({
     role: "driver",
     search: search || undefined,
     limit: 50,
   });
+
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [actionError, setActionError] = useState("");
+
+  const handleStatusChange = async (
+    driverId: string,
+    field: "driverStatus" | "centralStatus",
+    value: string,
+  ) => {
+    if (!token) return;
+
+    setActionError("");
+    setUpdatingId(driverId);
+
+    try {
+      await updateAccountControl(driverId, { [field]: value }, token);
+      await reload();
+    } catch (err) {
+      setActionError(formatApiError(err, "Could not update status."));
+    } finally {
+      setUpdatingId(null);
+    }
+  };
 
   return (
     <div>
@@ -50,6 +73,8 @@ export default function DriverList() {
           </Link>
         </div>
       </div>
+
+      {actionError && <p className="mb-4 text-sm font-medium text-red-500">{actionError}</p>}
 
       {loading ? (
         <p className="text-sm text-slate-400">Loading drivers…</p>
@@ -88,18 +113,22 @@ export default function DriverList() {
                     {(d.drivingLicense as { number?: string } | null)?.number || "—"}
                   </td>
                   <td className="py-3 px-4">
-                    <span className="px-2.5 py-1 rounded-full bg-slate-100 text-xs font-medium capitalize">
-                      {(d.driverStatus as string) || "—"}
-                    </span>
+                    <StatusBadgeSelect
+                      value={(d.driverStatus as string) || "pending"}
+                      options={DRIVER_STATUSES}
+                      styleMap={driverStatusStyle}
+                      disabled={updatingId === d.id}
+                      onChange={(v) => handleStatusChange(d.id, "driverStatus", v)}
+                    />
                   </td>
                   <td className="py-3 px-4">
-                    <span
-                      className={`px-2.5 py-1 rounded-full text-xs font-medium capitalize ${
-                        statusStyle[d.centralStatus as string] || "bg-slate-100 text-slate-500"
-                      }`}
-                    >
-                      {d.centralStatus as string}
-                    </span>
+                    <StatusBadgeSelect
+                      value={(d.centralStatus as string) || "active"}
+                      options={CENTRAL_STATUSES}
+                      styleMap={centralStatusStyle}
+                      disabled={updatingId === d.id}
+                      onChange={(v) => handleStatusChange(d.id, "centralStatus", v)}
+                    />
                   </td>
                   <td className="py-3 px-4 text-right">
                     <Link
