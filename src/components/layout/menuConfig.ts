@@ -8,6 +8,7 @@ import {
   CreditCard,
   BarChart3,
   Settings,
+  Globe,
 } from "lucide-react";
 
 export type SubMenuItem = {
@@ -69,6 +70,16 @@ export const menuConfig: MenuItem[] = [
     label: "Payments",
     icon: CreditCard,
     href: "/dashboard/payments",
+  },
+  {
+    key: "Website",
+    label: "Website",
+    icon: Globe,
+    href: "/dashboard/website",
+    submenu: [
+      { label: "Offers", href: "/dashboard/website/offers" },
+      { label: "Add offer", href: "/dashboard/website/offers/new" },
+    ],
   },
   {
     key: "reports",
