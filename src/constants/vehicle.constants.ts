@@ -13,7 +13,9 @@ export const VEHICLE_TYPES = [
   "other",
 ] as const;
 
-export const FUEL_TYPES = ["petrol", "diesel", "cng", "electric", "hybrid"] as const;
+// Sorted A-Z for display in a single-select dropdown — fuelType is a
+// single enum value on the backend, not an array.
+export const FUEL_TYPES = ["cng", "diesel", "electric", "hybrid", "petrol"] as const;
 
 export const TRANSMISSIONS = ["manual", "automatic"] as const;
 

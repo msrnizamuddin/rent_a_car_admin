@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Plus, Search } from "lucide-react";
+import { Plus, Search, Pencil } from "lucide-react";
 import { useVehicles } from "@/hooks/useVehicles";
 import { useVehicleCategories } from "@/hooks/useVehicleCategories";
 
@@ -89,6 +89,7 @@ export default function VehicleList() {
                 <th className="py-3 px-4">Location</th>
                 <th className="py-3 px-4">Rate / day</th>
                 <th className="py-3 px-4">Status</th>
+                <th className="py-3 px-4" />
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -128,6 +129,15 @@ export default function VehicleList() {
                     >
                       {v.availabilityStatus}
                     </span>
+                  </td>
+                  <td className="py-3 px-4 text-right">
+                    <Link
+                      href={`/dashboard/vehicles/${v.id}/edit`}
+                      className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 transition"
+                    >
+                      <Pencil className="w-3.5 h-3.5" />
+                      Edit
+                    </Link>
                   </td>
                 </tr>
               ))}
