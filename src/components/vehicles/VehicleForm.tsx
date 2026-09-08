@@ -90,9 +90,11 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  // In create mode, the vehicle is created first (docs need a real
-  // ownerId), then this holds the new id so the document step shows.
-  const [createdVehicleId, setCreatedVehicleId] = useState<string | null>(vehicleId || null);
+  // The vehicle's real id, once it exists — either passed in (edit mode)
+  // or set right after a successful create. Document uploads need this
+  // (a real ownerId), so the upload section stays on this same page and
+  // simply unlocks once this is set, rather than navigating anywhere.
+  const [savedVehicleId, setSavedVehicleId] = useState<string | null>(vehicleId || null);
 
   const [vehiclePhotos, setVehiclePhotos] = useState<Array<UploadedDocument | null>>(
     Array(REQUIRED_VEHICLE_PHOTOS).fill(null),
@@ -175,15 +177,17 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
     };
 
     try {
-      if (isEdit && vehicleId) {
-        await updateVehicle(vehicleId, { ...payload, ownerDriverId: form.ownerDriverId || null }, token);
+      if (savedVehicleId) {
+        await updateVehicle(savedVehicleId, { ...payload, ownerDriverId: form.ownerDriverId || null }, token);
         router.push("/dashboard/vehicles");
       } else {
         const created = await createVehicle(
           { ...payload, ...(form.ownerDriverId ? { ownerDriverId: form.ownerDriverId } : {}) },
           token,
         );
-        setCreatedVehicleId(created.id);
+        // Stay on this page — the document section below unlocks now that
+        // a real vehicle id exists, instead of navigating anywhere.
+        setSavedVehicleId(created.id);
       }
     } catch (err) {
       setError(formatApiError(err, "Could not save vehicle, please try again."));
@@ -194,112 +198,6 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
 
   if (loading) {
     return <p className="text-sm text-slate-400">Loading vehicle…</p>;
-  }
-
-  // Create flow, phase 2: vehicle already exists — collect required documents.
-  if (createdVehicleId && !isEdit) {
-    return (
-      <div className="max-w-3xl">
-        <div className="mb-6">
-          <h1 className="text-xl font-semibold text-slate-900">Add vehicle documents</h1>
-          <p className="text-sm text-slate-500">
-            Vehicle created. Upload at least {REQUIRED_VEHICLE_DOCS} documents to mark it fully
-            documented — {REQUIRED_VEHICLE_PHOTOS} photos with the number plate visible,
-            registration copy, tax token, and fitness certificate.
-          </p>
-        </div>
-
-        <div className="space-y-6">
-          <div className="flex items-center gap-2 text-sm font-medium">
-            {isFullyDocumented ? (
-              <span className="flex items-center gap-1.5 text-green-600">
-                <CheckCircle2 className="w-4 h-4" />
-                Fully documented ({uploadedCount}/{REQUIRED_VEHICLE_DOCS})
-              </span>
-            ) : (
-              <span className="text-amber-600">
-                {uploadedCount}/{REQUIRED_VEHICLE_DOCS} required documents uploaded
-              </span>
-            )}
-          </div>
-
-          <div>
-            <h2 className="text-sm font-semibold text-slate-800 mb-3">
-              Vehicle photos (number plate visible)
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {vehiclePhotos.map((photo, i) => (
-                <DocumentUpload
-                  key={i}
-                  label={`Photo ${i + 1}`}
-                  category="vehicle_photo"
-                  ownerType="vehicle"
-                  ownerId={createdVehicleId}
-                  value={photo}
-                  onUploaded={(doc) =>
-                    setVehiclePhotos((prev) => prev.map((p, idx) => (idx === i ? doc : p)))
-                  }
-                  onRemove={() =>
-                    setVehiclePhotos((prev) => prev.map((p, idx) => (idx === i ? null : p)))
-                  }
-                />
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <h2 className="text-sm font-semibold text-slate-800 mb-3">Paperwork</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <DocumentUpload
-                label="Registration copy"
-                category="registration_copy"
-                ownerType="vehicle"
-                ownerId={createdVehicleId}
-                value={registrationCopy}
-                onUploaded={setRegistrationCopy}
-                onRemove={() => setRegistrationCopy(null)}
-              />
-              <DocumentUpload
-                label="Tax token"
-                category="tax_token"
-                ownerType="vehicle"
-                ownerId={createdVehicleId}
-                value={taxToken}
-                onUploaded={setTaxToken}
-                onRemove={() => setTaxToken(null)}
-              />
-              <DocumentUpload
-                label="Fitness certificate"
-                category="fitness_certificate"
-                ownerType="vehicle"
-                ownerId={createdVehicleId}
-                value={fitnessCertificate}
-                onUploaded={setFitnessCertificate}
-                onRemove={() => setFitnessCertificate(null)}
-              />
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 pt-2">
-            <button
-              type="button"
-              disabled={!isFullyDocumented}
-              onClick={() => router.push("/dashboard/vehicles")}
-              className="h-11 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold transition"
-            >
-              Done
-            </button>
-            <button
-              type="button"
-              onClick={() => router.push("/dashboard/vehicles")}
-              className="h-11 px-6 rounded-xl border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 transition"
-            >
-              Finish later
-            </button>
-          </div>
-        </div>
-      </div>
-    );
   }
 
   return (
@@ -483,7 +381,7 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
             disabled={submitting}
             className="h-11 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-sm font-semibold transition"
           >
-            {submitting ? "Saving..." : isEdit ? "Save changes" : "Create vehicle"}
+            {submitting ? "Saving..." : savedVehicleId ? "Save changes" : "Create vehicle"}
           </button>
           <button
             type="button"
@@ -494,6 +392,93 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
           </button>
         </div>
       </form>
+
+      <div className="max-w-3xl mt-6 border border-slate-100 rounded-2xl p-5">
+        <h2 className="text-sm font-semibold text-slate-800 mb-1">Vehicle documents</h2>
+        <p className="text-xs text-slate-500 mb-4">
+          {REQUIRED_VEHICLE_PHOTOS} photos with the number plate visible, plus registration
+          copy, tax token, and fitness certificate — {REQUIRED_VEHICLE_DOCS} total to mark this
+          vehicle fully documented.
+        </p>
+
+        {!savedVehicleId ? (
+          <p className="text-sm text-slate-400">
+            Save the vehicle details above first — uploads need a saved vehicle to attach to.
+          </p>
+        ) : (
+          <div className="space-y-6">
+            <div className="flex items-center gap-2 text-sm font-medium">
+              {isFullyDocumented ? (
+                <span className="flex items-center gap-1.5 text-green-600">
+                  <CheckCircle2 className="w-4 h-4" />
+                  Fully documented ({uploadedCount}/{REQUIRED_VEHICLE_DOCS})
+                </span>
+              ) : (
+                <span className="text-amber-600">
+                  {uploadedCount}/{REQUIRED_VEHICLE_DOCS} required documents uploaded
+                </span>
+              )}
+            </div>
+
+            <div>
+              <h3 className="text-sm font-semibold text-slate-800 mb-3">
+                Vehicle photos (number plate visible)
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {vehiclePhotos.map((photo, i) => (
+                  <DocumentUpload
+                    key={i}
+                    label={`Photo ${i + 1}`}
+                    category="vehicle_photo"
+                    ownerType="vehicle"
+                    ownerId={savedVehicleId}
+                    value={photo}
+                    onUploaded={(doc) =>
+                      setVehiclePhotos((prev) => prev.map((p, idx) => (idx === i ? doc : p)))
+                    }
+                    onRemove={() =>
+                      setVehiclePhotos((prev) => prev.map((p, idx) => (idx === i ? null : p)))
+                    }
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-semibold text-slate-800 mb-3">Paperwork</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <DocumentUpload
+                  label="Registration copy"
+                  category="registration_copy"
+                  ownerType="vehicle"
+                  ownerId={savedVehicleId}
+                  value={registrationCopy}
+                  onUploaded={setRegistrationCopy}
+                  onRemove={() => setRegistrationCopy(null)}
+                />
+                <DocumentUpload
+                  label="Tax token"
+                  category="tax_token"
+                  ownerType="vehicle"
+                  ownerId={savedVehicleId}
+                  value={taxToken}
+                  onUploaded={setTaxToken}
+                  onRemove={() => setTaxToken(null)}
+                />
+                <DocumentUpload
+                  label="Fitness certificate"
+                  category="fitness_certificate"
+                  ownerType="vehicle"
+                  ownerId={savedVehicleId}
+                  value={fitnessCertificate}
+                  onUploaded={setFitnessCertificate}
+                  onRemove={() => setFitnessCertificate(null)}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
