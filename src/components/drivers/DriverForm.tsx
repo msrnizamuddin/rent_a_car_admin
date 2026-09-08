@@ -7,6 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import { createStaff, getUserById, updateUser } from "@/services/authService";
 import { formatApiError } from "@/lib/errorMessages";
 import DocumentUpload from "@/components/shared/DocumentUpload";
+import DriverOwnVehicle from "@/components/drivers/DriverOwnVehicle";
 import type { UploadedDocument } from "@/services/documentService";
 
 const inputClass =
@@ -61,6 +62,10 @@ export default function DriverForm({ driverId }: DriverFormProps) {
   const [loading, setLoading] = useState(isEdit);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+
+  // Set once a new driver has been created, so the "own vehicle" section
+  // (which needs a real driver id for ownerDriverId) can appear.
+  const [createdDriverId, setCreatedDriverId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!driverId || !token) return;
@@ -162,8 +167,9 @@ export default function DriverForm({ driverId }: DriverFormProps) {
           },
           token,
         );
+        router.push("/dashboard/drivers");
       } else {
-        await createStaff(
+        const created = await createStaff(
           {
             role: "driver",
             fullName: form.name,
@@ -178,19 +184,46 @@ export default function DriverForm({ driverId }: DriverFormProps) {
           },
           token,
         );
+        setCreatedDriverId(created.id);
       }
-
-      router.push("/dashboard/drivers");
     } catch (err) {
       setError(
         formatApiError(err, `Could not ${isEdit ? "update" : "add"} driver, please try again.`),
       );
+    } finally {
       setSubmitting(false);
     }
   };
 
   if (loading) {
     return <p className="text-sm text-slate-400">Loading driver…</p>;
+  }
+
+  // Create flow, phase 2: driver already exists — offer to register their
+  // own vehicle (needs a real driver id for ownerDriverId).
+  if (createdDriverId && !isEdit) {
+    return (
+      <div className="max-w-3xl">
+        <div className="mb-6">
+          <h1 className="text-xl font-semibold text-slate-900">Driver added</h1>
+          <p className="text-sm text-slate-500">
+            Optionally register a vehicle this driver personally owns.
+          </p>
+        </div>
+
+        <DriverOwnVehicle driverId={createdDriverId} />
+
+        <div className="flex items-center gap-3 pt-6">
+          <button
+            type="button"
+            onClick={() => router.push("/dashboard/drivers")}
+            className="h-11 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition"
+          >
+            Done
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -352,6 +385,12 @@ export default function DriverForm({ driverId }: DriverFormProps) {
           </button>
         </div>
       </form>
+
+      {isEdit && driverId && (
+        <div className="max-w-2xl mt-6">
+          <DriverOwnVehicle driverId={driverId} />
+        </div>
+      )}
     </div>
   );
 }
