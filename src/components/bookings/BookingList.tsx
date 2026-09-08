@@ -18,7 +18,7 @@ const STATUS_OPTIONS: { value: RentalRequestStatus | ""; label: string }[] = [
   { value: "cancelled", label: "Cancelled" },
 ];
 
-const statusStyle: Record<string, string> = {
+export const statusStyle: Record<string, string> = {
   submitted: "bg-blue-50 text-blue-600",
   under_review: "bg-amber-50 text-amber-600",
   estimate_provided: "bg-amber-50 text-amber-600",

@@ -14,6 +14,7 @@ import {
   CalendarClock,
 } from "lucide-react";
 import { useDashboardStats } from "@/hooks/useDashboardStats";
+import { statusStyle as rentalRequestStatusStyle } from "@/components/bookings/BookingList";
 
 function StatCard({
   icon: Icon,
@@ -155,7 +156,11 @@ export default function DashboardOverview() {
                     </td>
                     <td className="py-3 px-4 capitalize text-slate-600">{r.tripType}</td>
                     <td className="py-3 px-4 text-slate-600">
-                      <span className="px-2.5 py-1 rounded-full bg-slate-100 text-xs font-medium capitalize">
+                      <span
+                        className={`px-2.5 py-1 rounded-full text-xs font-medium capitalize ${
+                          rentalRequestStatusStyle[r.status] || "bg-slate-100 text-slate-500"
+                        }`}
+                      >
                         {r.status.replace(/_/g, " ")}
                       </span>
                     </td>

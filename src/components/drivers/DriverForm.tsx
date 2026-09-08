@@ -8,6 +8,7 @@ import { createStaff, getUserById, updateUser } from "@/services/authService";
 import { formatApiError } from "@/lib/errorMessages";
 import DocumentUpload from "@/components/shared/DocumentUpload";
 import DriverOwnVehicle from "@/components/drivers/DriverOwnVehicle";
+import DriverStatusControl from "@/components/drivers/DriverStatusControl";
 import type { UploadedDocument } from "@/services/documentService";
 
 const inputClass =
@@ -387,7 +388,8 @@ export default function DriverForm({ driverId }: DriverFormProps) {
       </form>
 
       {isEdit && driverId && (
-        <div className="max-w-2xl mt-6">
+        <div className="max-w-2xl mt-6 space-y-6">
+          <DriverStatusControl driverId={driverId} />
           <DriverOwnVehicle driverId={driverId} />
         </div>
       )}

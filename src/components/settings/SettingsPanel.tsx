@@ -4,7 +4,7 @@ import { useState, type FormEvent } from "react";
 import { useProfile } from "@/hooks/useProfile";
 
 const inputClass =
-  "w-full h-11 px-3.5 rounded-xl bg-slate-50 border border-slate-200 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition";
+  "w-full h-11 px-3.5 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition";
 const labelClass = "text-xs font-medium text-slate-500 mb-1.5 block";
 
 export default function SettingsPanel() {
@@ -66,11 +66,11 @@ export default function SettingsPanel() {
           </div>
           <div>
             <label className={labelClass}>Phone</label>
-            <input value={user?.mobileNumber || ""} disabled className={`${inputClass} opacity-60`} />
+            <input value={user?.mobileNumber || ""} disabled className={`${inputClass} bg-slate-100 cursor-not-allowed`} />
           </div>
           <div>
             <label className={labelClass}>Role</label>
-            <input value={user?.role || ""} disabled className={`${inputClass} opacity-60 capitalize`} />
+            <input value={user?.role || ""} disabled className={`${inputClass} bg-slate-100 cursor-not-allowed capitalize`} />
           </div>
         </div>
         <button
