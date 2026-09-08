@@ -7,6 +7,8 @@ export type VehicleLocation = {
   city: string;
   district?: string;
   address?: string;
+  latitude?: number;
+  longitude?: number;
 };
 
 export type Vehicle = {
@@ -30,6 +32,7 @@ export type Vehicle = {
   availabilityStatus: string;
   driverRequired: boolean;
   ownerInfo: { name?: string; contactNumber?: string } | null;
+  assignedDriverId: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -78,7 +81,7 @@ export type CreateVehiclePayload = {
   isAC?: boolean;
   features?: string[];
   color?: string;
-  location: VehicleLocation;
+  location?: VehicleLocation;
   estimatedRentalRate?: { perKm?: number; perDay?: number; perHour?: number };
   availabilityStatus?: string;
   driverRequired?: boolean;
@@ -89,10 +92,21 @@ export function createVehicle(payload: CreateVehiclePayload, token: string) {
   return apiPost<Vehicle>(ENDPOINTS.vehicle.search, payload, { token });
 }
 
-export function updateVehicle(id: string, payload: Partial<CreateVehiclePayload>, token: string) {
+// assignedDriverId is a persistent fleet-level "this driver drives this
+// car" pairing, separate from CreateVehiclePayload — pass null to unassign.
+export type UpdateVehiclePayload = Partial<CreateVehiclePayload> & {
+  assignedDriverId?: string | null;
+};
+
+export function updateVehicle(id: string, payload: UpdateVehiclePayload, token: string) {
   return apiPatch<Vehicle>(ENDPOINTS.vehicle.byId(id), payload, { token });
 }
 
 export function deleteVehicle(id: string, token: string) {
   return apiDelete(ENDPOINTS.vehicle.byId(id), { token });
+}
+
+// Pass driverId: null to unassign.
+export function assignDriverToVehicle(id: string, driverId: string | null, token: string) {
+  return updateVehicle(id, { assignedDriverId: driverId }, token);
 }

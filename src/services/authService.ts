@@ -39,13 +39,36 @@ export type CreateStaffPayload = {
   mobileNumber: string;
   email?: string;
   password: string;
+  fatherName?: string;
+  motherName?: string;
+  dateOfBirth?: string;
   address?: Record<string, unknown>;
   identification?: Record<string, unknown>;
   drivingLicense?: Record<string, unknown>;
+  profilePicture?: string;
 };
 
 export function createStaff(payload: CreateStaffPayload, token: string) {
   return apiPost<StoredUser>(ENDPOINTS.auth.createStaff, payload, { token });
+}
+
+// Full profile edit for any user — superadmin/manager only. Every field is
+// optional so callers can PATCH just the bits that changed.
+export type UpdateUserPayload = {
+  fullName?: string;
+  fatherName?: string;
+  motherName?: string;
+  dateOfBirth?: string;
+  email?: string;
+  mobileNumber?: string;
+  address?: Record<string, unknown>;
+  identification?: Record<string, unknown>;
+  drivingLicense?: Record<string, unknown>;
+  profilePicture?: string;
+};
+
+export function updateUser(id: string, payload: UpdateUserPayload, token: string) {
+  return apiPatch<StoredUser>(ENDPOINTS.auth.userById(id), payload, { token });
 }
 
 export type UserListParams = {

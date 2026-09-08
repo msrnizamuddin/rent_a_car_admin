@@ -142,5 +142,6 @@ export const ENDPOINTS = {
   document: {
     all: document("/all"),
     byId: (id: string) => document(`/${id}`),
+    upload: document("/upload"),
   },
 };
