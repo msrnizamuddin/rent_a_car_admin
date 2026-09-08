@@ -26,6 +26,7 @@ const setting = (path = "") => `/setting/web${path}`;
 const ticket = (path = "") => `/ticket/web${path}`;
 const auditLog = (path = "") => `/audit-log/web${path}`;
 const document = (path = "") => `/document/web${path}`;
+const offer = (path = "") => `/offer/web${path}`;
 
 export const ENDPOINTS = {
   auth: {
@@ -143,5 +144,11 @@ export const ENDPOINTS = {
     all: document("/all"),
     byId: (id: string) => document(`/${id}`),
     upload: document("/upload"),
+  },
+
+  offer: {
+    list: offer("/"),
+    all: offer("/all"),
+    byId: (id: string) => offer(`/${id}`),
   },
 };
