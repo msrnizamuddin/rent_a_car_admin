@@ -1,30 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { Upload, User, Phone, Mail, IdCard, MapPin, Car } from "lucide-react";
+import { User, Phone, Mail, IdCard, Lock } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { createStaff } from "@/services/authService";
+import { formatApiError } from "@/lib/errorMessages";
 
-type DriverFormState = {
-  name: string;
-  phone: string;
-  email: string;
-  nid: string;
-  licenseNo: string;
-  licenseExpiry: string;
-  address: string;
-  vehicle: string;
-};
-
-const initialState: DriverFormState = {
-  name: "",
-  phone: "",
-  email: "",
-  nid: "",
-  licenseNo: "",
-  licenseExpiry: "",
-  address: "",
-  vehicle: "",
-};
+const inputClass =
+  "w-full h-12 pl-11 pr-4 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition";
 
 function Field({
   label,
@@ -37,9 +21,7 @@ function Field({
 }) {
   return (
     <div>
-      <label className="text-xs font-medium text-slate-500 mb-1.5 block">
-        {label}
-      </label>
+      <label className="text-xs font-medium text-slate-500 mb-1.5 block">{label}</label>
       <div className="relative">
         <Icon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
         {children}
@@ -48,32 +30,49 @@ function Field({
   );
 }
 
-const inputClass =
-  "w-full h-12 pl-11 pr-4 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition";
-
 export default function DriverForm() {
   const router = useRouter();
-  const [form, setForm] = useState<DriverFormState>(initialState);
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const { token } = useAuth();
+
+  const [form, setForm] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    password: "",
+    licenseNo: "",
+  });
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
   const update =
-    (key: keyof DriverFormState) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    (key: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
       setForm((prev) => ({ ...prev, [key]: e.target.value }));
 
-  const handlePhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) setPhotoPreview(URL.createObjectURL(file));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (!token) return;
+
+    setError("");
     setSubmitting(true);
-    // TODO: POST to /api/v1/drivers
-    setTimeout(() => {
-      setSubmitting(false);
+
+    try {
+      await createStaff(
+        {
+          role: "driver",
+          fullName: form.name,
+          mobileNumber: form.phone,
+          email: form.email || undefined,
+          password: form.password,
+          drivingLicense: { number: form.licenseNo },
+        },
+        token,
+      );
+
       router.push("/dashboard/drivers");
-    }, 1000);
+    } catch (err) {
+      setError(formatApiError(err, "Could not add driver, please try again."));
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -86,31 +85,6 @@ export default function DriverForm() {
       </div>
 
       <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
-        {/* Photo upload */}
-        <div className="flex items-center gap-4">
-          <div className="w-20 h-20 rounded-2xl bg-slate-50 border border-dashed border-slate-200 flex items-center justify-center overflow-hidden shrink-0">
-            {photoPreview ? (
-              <img
-                src={photoPreview}
-                alt="Driver"
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <User className="w-7 h-7 text-slate-300" />
-            )}
-          </div>
-          <label className="h-10 px-4 rounded-xl border border-slate-200 text-sm font-medium text-slate-600 flex items-center gap-2 cursor-pointer hover:bg-slate-50 transition">
-            <Upload className="w-4 h-4" />
-            Upload photo
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handlePhoto}
-            />
-          </label>
-        </div>
-
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Field label="Full name" icon={User}>
             <input
@@ -127,27 +101,17 @@ export default function DriverForm() {
               required
               value={form.phone}
               onChange={update("phone")}
-              placeholder="01xxx-xxxxxx"
+              placeholder="01XXXXXXXXX"
               className={inputClass}
             />
           </Field>
 
-          <Field label="Email" icon={Mail}>
+          <Field label="Email (optional)" icon={Mail}>
             <input
               type="email"
               value={form.email}
               onChange={update("email")}
               placeholder="driver@example.com"
-              className={inputClass}
-            />
-          </Field>
-
-          <Field label="NID number" icon={IdCard}>
-            <input
-              required
-              value={form.nid}
-              onChange={update("nid")}
-              placeholder="National ID number"
               className={inputClass}
             />
           </Field>
@@ -162,34 +126,20 @@ export default function DriverForm() {
             />
           </Field>
 
-          <Field label="License expiry" icon={IdCard}>
+          <Field label="Temporary password" icon={Lock}>
             <input
-              type="date"
               required
-              value={form.licenseExpiry}
-              onChange={update("licenseExpiry")}
-              className={inputClass}
-            />
-          </Field>
-
-          <Field label="Address" icon={MapPin}>
-            <input
-              value={form.address}
-              onChange={update("address")}
-              placeholder="Present address"
-              className={inputClass}
-            />
-          </Field>
-
-          <Field label="Assign vehicle (optional)" icon={Car}>
-            <input
-              value={form.vehicle}
-              onChange={update("vehicle")}
-              placeholder="Ford Focus — DHA-1234"
+              minLength={8}
+              type="password"
+              value={form.password}
+              onChange={update("password")}
+              placeholder="At least 8 characters"
               className={inputClass}
             />
           </Field>
         </div>
+
+        {error && <p className="text-sm font-medium text-red-500">{error}</p>}
 
         <div className="flex items-center gap-3 pt-2">
           <button

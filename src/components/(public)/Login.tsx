@@ -1,20 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import { Car, Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { formatApiError } from "@/lib/errorMessages";
 
 export default function LoginPanel() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [remember, setRemember] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const { login } = useAuth();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [emailOrPhone, setEmailOrPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setError("");
     setLoading(true);
-    // TODO: call auth service (login endpoint)
-    setTimeout(() => setLoading(false), 1200);
+
+    try {
+      await login(emailOrPhone, password);
+      router.push("/dashboard");
+    } catch (err) {
+      setError(formatApiError(err, "Sign in failed, please try again."));
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -32,23 +46,23 @@ export default function LoginPanel() {
           Welcome back
         </h1>
         <p className="text-sm text-slate-500 mb-8">
-          Log in to manage your fleet and bookings.
+          Log in to manage your fleet and bookings. Admins and managers only.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Email */}
+          {/* Email / phone */}
           <div>
             <label className="text-xs font-medium text-slate-500 mb-1.5 block">
-              Email
+              Email or phone
             </label>
             <div className="relative">
               <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
-                type="email"
+                type="text"
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
+                value={emailOrPhone}
+                onChange={(e) => setEmailOrPhone(e.target.value)}
+                placeholder="you@example.com or 01XXXXXXXXX"
                 className="w-full h-12 pl-11 pr-4 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition"
               />
             </div>
@@ -85,6 +99,10 @@ export default function LoginPanel() {
               </button>
             </div>
           </div>
+
+          {error && (
+            <p className="text-xs font-medium text-red-500 text-center">{error}</p>
+          )}
 
           {/* Submit */}
           <button
