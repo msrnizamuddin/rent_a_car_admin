@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ChevronDown, ChevronRight, CheckCircle2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useVehicleCategories } from "@/hooks/useVehicleCategories";
+import { useUsers } from "@/hooks/useUsers";
 import { createVehicle, getVehicleById, updateVehicle } from "@/services/vehicleService";
 import { formatApiError } from "@/lib/errorMessages";
 import DocumentUpload from "@/components/shared/DocumentUpload";
@@ -38,7 +39,6 @@ const emptyForm = {
   registrationNumber: "",
   modelYear: String(new Date().getFullYear()),
   seatingCapacity: "5",
-  fuelType: FUEL_TYPES[0] as string,
   transmission: TRANSMISSIONS[0] as string,
   color: "",
   city: "",
@@ -46,6 +46,7 @@ const emptyForm = {
   perDay: "",
   perHour: "",
   perKm: "",
+  ownerDriverId: "",
 };
 
 function CollapsibleSection({
@@ -82,9 +83,13 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
   const router = useRouter();
   const { token } = useAuth();
   const { categories } = useVehicleCategories();
+  const { users: drivers } = useUsers({ role: "driver", limit: 200 });
   const isEdit = Boolean(vehicleId);
 
   const [form, setForm] = useState(emptyForm);
+  // A vehicle can support more than one fuel type — kept separate from
+  // `form` since it isn't a single input's value.
+  const [fuelTypes, setFuelTypes] = useState<string[]>([FUEL_TYPES[0] as string]);
   const [loading, setLoading] = useState(isEdit);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -123,7 +128,6 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
           registrationNumber: vehicle.registrationNumber || "",
           modelYear: String(vehicle.modelYear || new Date().getFullYear()),
           seatingCapacity: String(vehicle.seatingCapacity || 5),
-          fuelType: vehicle.fuelType || (FUEL_TYPES[0] as string),
           transmission: vehicle.transmission || (TRANSMISSIONS[0] as string),
           color: vehicle.color || "",
           city: vehicle.location?.city || "",
@@ -131,7 +135,9 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
           perDay: vehicle.estimatedRentalRate?.perDay ? String(vehicle.estimatedRentalRate.perDay) : "",
           perHour: vehicle.estimatedRentalRate?.perHour ? String(vehicle.estimatedRentalRate.perHour) : "",
           perKm: vehicle.estimatedRentalRate?.perKm ? String(vehicle.estimatedRentalRate.perKm) : "",
+          ownerDriverId: vehicle.ownerDriverId || "",
         });
+        setFuelTypes(vehicle.fuelType?.length ? vehicle.fuelType : [FUEL_TYPES[0] as string]);
       })
       .catch((err) => setError(formatApiError(err, "Could not load vehicle.")))
       .finally(() => setLoading(false));
@@ -142,6 +148,11 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
       setForm((prev) => ({ ...prev, [key]: e.target.value }));
 
+  const toggleFuelType = (type: string) =>
+    setFuelTypes((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type],
+    );
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!token) return;
@@ -151,6 +162,12 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
 
     if (!form.categoryId) {
       setError("Please select a category.");
+      setSubmitting(false);
+      return;
+    }
+
+    if (fuelTypes.length === 0) {
+      setError("Please select at least one fuel type.");
       setSubmitting(false);
       return;
     }
@@ -173,7 +190,7 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
       registrationNumber: form.registrationNumber,
       modelYear: Number(form.modelYear),
       seatingCapacity: Number(form.seatingCapacity),
-      fuelType: form.fuelType,
+      fuelType: fuelTypes,
       transmission: form.transmission,
       color: form.color || undefined,
       ...(form.city ? { location: { city: form.city, address: form.address || undefined } } : {}),
@@ -182,10 +199,13 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
 
     try {
       if (isEdit && vehicleId) {
-        await updateVehicle(vehicleId, payload, token);
+        await updateVehicle(vehicleId, { ...payload, ownerDriverId: form.ownerDriverId || null }, token);
         router.push("/dashboard/vehicles");
       } else {
-        const created = await createVehicle(payload, token);
+        const created = await createVehicle(
+          { ...payload, ...(form.ownerDriverId ? { ownerDriverId: form.ownerDriverId } : {}) },
+          token,
+        );
         setCreatedVehicleId(created.id);
       }
     } catch (err) {
@@ -412,16 +432,6 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
             />
           </div>
           <div>
-            <label className={labelClass}>Fuel type</label>
-            <select value={form.fuelType} onChange={update("fuelType")} className={inputClass}>
-              {FUEL_TYPES.map((f) => (
-                <option key={f} value={f}>
-                  {f}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
             <label className={labelClass}>Transmission</label>
             <select
               value={form.transmission}
@@ -438,6 +448,30 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
           <div>
             <label className={labelClass}>Color (optional)</label>
             <input value={form.color} onChange={update("color")} className={inputClass} />
+          </div>
+        </div>
+
+        <div>
+          <label className={labelClass}>Fuel type</label>
+          <div className="flex flex-wrap gap-2">
+            {FUEL_TYPES.map((f) => {
+              const checked = fuelTypes.includes(f);
+              return (
+                <button
+                  key={f}
+                  type="button"
+                  onClick={() => toggleFuelType(f)}
+                  aria-pressed={checked}
+                  className={`h-9 px-3.5 rounded-lg border text-sm font-medium capitalize transition ${
+                    checked
+                      ? "bg-blue-600 border-blue-600 text-white"
+                      : "bg-slate-50 border-slate-200 text-slate-600 hover:border-blue-400"
+                  }`}
+                >
+                  {f}
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -495,6 +529,31 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
               />
             </div>
           </div>
+        </CollapsibleSection>
+
+        <CollapsibleSection
+          title="Driver-owned vehicle (optional)"
+          defaultOpen={Boolean(form.ownerDriverId)}
+        >
+          <p className="text-xs text-slate-500 mb-3">
+            Set this when a driver brought their own car, rather than this being a company
+            fleet vehicle any admin can assign.{" "}
+            {isEdit
+              ? "Clear the selection to make it a fleet vehicle again."
+              : "Unless you also set an assignment below, the vehicle is assigned to its owner automatically."}
+          </p>
+          <select
+            value={form.ownerDriverId}
+            onChange={update("ownerDriverId")}
+            className={inputClass}
+          >
+            <option value="">Not driver-owned</option>
+            {drivers.map((d) => (
+              <option key={d.id} value={d.id}>
+                {d.fullName as string}
+              </option>
+            ))}
+          </select>
         </CollapsibleSection>
 
         {error && <p className="text-sm font-medium text-red-500">{error}</p>}

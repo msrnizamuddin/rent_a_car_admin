@@ -22,7 +22,8 @@ export type Vehicle = {
   registrationNumber: string;
   modelYear: number;
   seatingCapacity: number;
-  fuelType: string;
+  // A vehicle can support more than one fuel type (e.g. hybrid + electric).
+  fuelType: string[];
   transmission: string;
   isAC: boolean;
   features: string[];
@@ -33,6 +34,9 @@ export type Vehicle = {
   driverRequired: boolean;
   ownerInfo: { name?: string; contactNumber?: string } | null;
   assignedDriverId: string | null;
+  // Set when a driver brought their own car, rather than this being a
+  // company fleet vehicle any admin can assign.
+  ownerDriverId: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -76,7 +80,8 @@ export type CreateVehiclePayload = {
   registrationNumber: string;
   modelYear: number;
   seatingCapacity: number;
-  fuelType: string;
+  // At least one required — a vehicle can support more than one fuel type.
+  fuelType: string[];
   transmission: string;
   isAC?: boolean;
   features?: string[];
@@ -86,6 +91,9 @@ export type CreateVehiclePayload = {
   availabilityStatus?: string;
   driverRequired?: boolean;
   ownerInfo?: { name?: string; contactNumber?: string };
+  // Must reference an existing driver. When set (and assignedDriverId is
+  // omitted), the vehicle is auto-assigned to its owner.
+  ownerDriverId?: string;
 };
 
 export function createVehicle(payload: CreateVehiclePayload, token: string) {
@@ -94,8 +102,9 @@ export function createVehicle(payload: CreateVehiclePayload, token: string) {
 
 // assignedDriverId is a persistent fleet-level "this driver drives this
 // car" pairing, separate from CreateVehiclePayload — pass null to unassign.
-export type UpdateVehiclePayload = Partial<CreateVehiclePayload> & {
+export type UpdateVehiclePayload = Omit<Partial<CreateVehiclePayload>, "ownerDriverId"> & {
   assignedDriverId?: string | null;
+  ownerDriverId?: string | null;
 };
 
 export function updateVehicle(id: string, payload: UpdateVehiclePayload, token: string) {
