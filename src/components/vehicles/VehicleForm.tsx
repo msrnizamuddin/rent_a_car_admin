@@ -22,8 +22,9 @@ const inputClass =
 const labelClass = "text-xs font-medium text-slate-500 mb-1.5 block";
 
 // Minimum required for a vehicle to be considered "fully documented":
-// 2 plate-visible photos + registration copy + tax token + fitness cert.
-const REQUIRED_VEHICLE_DOCS = 5;
+// 5 plate-visible photos + registration copy + tax token + fitness cert.
+const REQUIRED_VEHICLE_PHOTOS = 5;
+const REQUIRED_VEHICLE_DOCS = REQUIRED_VEHICLE_PHOTOS + 3;
 
 type VehicleFormProps = {
   // Present in edit mode — PATCHes the existing vehicle instead of creating one.
@@ -41,11 +42,6 @@ const emptyForm = {
   seatingCapacity: "5",
   transmission: TRANSMISSIONS[0] as string,
   color: "",
-  city: "",
-  address: "",
-  perDay: "",
-  perHour: "",
-  perKm: "",
   ownerDriverId: "",
 };
 
@@ -98,19 +94,16 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
   // ownerId), then this holds the new id so the document step shows.
   const [createdVehicleId, setCreatedVehicleId] = useState<string | null>(vehicleId || null);
 
-  const [vehiclePhoto1, setVehiclePhoto1] = useState<UploadedDocument | null>(null);
-  const [vehiclePhoto2, setVehiclePhoto2] = useState<UploadedDocument | null>(null);
+  const [vehiclePhotos, setVehiclePhotos] = useState<Array<UploadedDocument | null>>(
+    Array(REQUIRED_VEHICLE_PHOTOS).fill(null),
+  );
   const [registrationCopy, setRegistrationCopy] = useState<UploadedDocument | null>(null);
   const [taxToken, setTaxToken] = useState<UploadedDocument | null>(null);
   const [fitnessCertificate, setFitnessCertificate] = useState<UploadedDocument | null>(null);
 
-  const uploadedCount = [
-    vehiclePhoto1,
-    vehiclePhoto2,
-    registrationCopy,
-    taxToken,
-    fitnessCertificate,
-  ].filter(Boolean).length;
+  const uploadedCount =
+    vehiclePhotos.filter(Boolean).length +
+    [registrationCopy, taxToken, fitnessCertificate].filter(Boolean).length;
   const isFullyDocumented = uploadedCount >= REQUIRED_VEHICLE_DOCS;
 
   useEffect(() => {
@@ -130,11 +123,6 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
           seatingCapacity: String(vehicle.seatingCapacity || 5),
           transmission: vehicle.transmission || (TRANSMISSIONS[0] as string),
           color: vehicle.color || "",
-          city: vehicle.location?.city || "",
-          address: vehicle.location?.address || "",
-          perDay: vehicle.estimatedRentalRate?.perDay ? String(vehicle.estimatedRentalRate.perDay) : "",
-          perHour: vehicle.estimatedRentalRate?.perHour ? String(vehicle.estimatedRentalRate.perHour) : "",
-          perKm: vehicle.estimatedRentalRate?.perKm ? String(vehicle.estimatedRentalRate.perKm) : "",
           ownerDriverId: vehicle.ownerDriverId || "",
         });
         setFuelTypes(vehicle.fuelType?.length ? vehicle.fuelType : [FUEL_TYPES[0] as string]);
@@ -172,15 +160,6 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
       return;
     }
 
-    // The backend rejects estimatedRentalRate as an empty object — only
-    // send it at all when at least one rate field was actually filled in.
-    const rate = {
-      perDay: form.perDay ? Number(form.perDay) : undefined,
-      perHour: form.perHour ? Number(form.perHour) : undefined,
-      perKm: form.perKm ? Number(form.perKm) : undefined,
-    };
-    const hasRate = Object.values(rate).some((v) => v !== undefined);
-
     const payload = {
       vehicleName: form.vehicleName,
       brand: form.brand,
@@ -193,8 +172,6 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
       fuelType: fuelTypes,
       transmission: form.transmission,
       color: form.color || undefined,
-      ...(form.city ? { location: { city: form.city, address: form.address || undefined } } : {}),
-      ...(hasRate ? { estimatedRentalRate: rate } : {}),
     };
 
     try {
@@ -227,8 +204,8 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
           <h1 className="text-xl font-semibold text-slate-900">Add vehicle documents</h1>
           <p className="text-sm text-slate-500">
             Vehicle created. Upload at least {REQUIRED_VEHICLE_DOCS} documents to mark it fully
-            documented — 2 photos with the number plate visible, registration copy, tax token,
-            and fitness certificate.
+            documented — {REQUIRED_VEHICLE_PHOTOS} photos with the number plate visible,
+            registration copy, tax token, and fitness certificate.
           </p>
         </div>
 
@@ -251,24 +228,22 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
               Vehicle photos (number plate visible)
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <DocumentUpload
-                label="Photo 1"
-                category="vehicle_photo"
-                ownerType="vehicle"
-                ownerId={createdVehicleId}
-                value={vehiclePhoto1}
-                onUploaded={setVehiclePhoto1}
-                onRemove={() => setVehiclePhoto1(null)}
-              />
-              <DocumentUpload
-                label="Photo 2"
-                category="vehicle_photo"
-                ownerType="vehicle"
-                ownerId={createdVehicleId}
-                value={vehiclePhoto2}
-                onUploaded={setVehiclePhoto2}
-                onRemove={() => setVehiclePhoto2(null)}
-              />
+              {vehiclePhotos.map((photo, i) => (
+                <DocumentUpload
+                  key={i}
+                  label={`Photo ${i + 1}`}
+                  category="vehicle_photo"
+                  ownerType="vehicle"
+                  ownerId={createdVehicleId}
+                  value={photo}
+                  onUploaded={(doc) =>
+                    setVehiclePhotos((prev) => prev.map((p, idx) => (idx === i ? doc : p)))
+                  }
+                  onRemove={() =>
+                    setVehiclePhotos((prev) => prev.map((p, idx) => (idx === i ? null : p)))
+                  }
+                />
+              ))}
             </div>
           </div>
 
@@ -474,62 +449,6 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
             })}
           </div>
         </div>
-
-        <CollapsibleSection
-          title="Pickup location (optional)"
-          defaultOpen={Boolean(form.city || form.address)}
-        >
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className={labelClass}>City</label>
-              <input
-                value={form.city}
-                onChange={update("city")}
-                placeholder="Dhaka"
-                className={inputClass}
-              />
-            </div>
-            <div>
-              <label className={labelClass}>Address (optional)</label>
-              <input value={form.address} onChange={update("address")} className={inputClass} />
-            </div>
-          </div>
-        </CollapsibleSection>
-
-        <CollapsibleSection
-          title="Estimated rental rate (optional)"
-          defaultOpen={Boolean(form.perDay || form.perHour || form.perKm)}
-        >
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div>
-              <label className={labelClass}>Per day (৳)</label>
-              <input
-                type="number"
-                value={form.perDay}
-                onChange={update("perDay")}
-                className={inputClass}
-              />
-            </div>
-            <div>
-              <label className={labelClass}>Per hour (৳)</label>
-              <input
-                type="number"
-                value={form.perHour}
-                onChange={update("perHour")}
-                className={inputClass}
-              />
-            </div>
-            <div>
-              <label className={labelClass}>Per km (৳)</label>
-              <input
-                type="number"
-                value={form.perKm}
-                onChange={update("perKm")}
-                className={inputClass}
-              />
-            </div>
-          </div>
-        </CollapsibleSection>
 
         <CollapsibleSection
           title="Driver-owned vehicle (optional)"

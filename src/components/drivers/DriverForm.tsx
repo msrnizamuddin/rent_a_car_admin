@@ -119,24 +119,32 @@ export default function DriverForm({ driverId }: DriverFormProps) {
     if (!token) return;
 
     setError("");
+
+    if (!form.idNumber) {
+      setError(form.idType === "passport" ? "Passport number is required." : "NID number is required.");
+      return;
+    }
+    if (!idDoc) {
+      setError(form.idType === "passport" ? "Passport document is required." : "NID document is required.");
+      return;
+    }
+    if (!licenseDoc) {
+      setError("Driving license document is required.");
+      return;
+    }
+
     setSubmitting(true);
 
-    const identification =
-      form.idNumber || idDoc
-        ? {
-            type: form.idType,
-            number: form.idNumber || undefined,
-            frontImage: idDoc?.fileUrl,
-          }
-        : undefined;
+    const identification = {
+      type: form.idType,
+      number: form.idNumber,
+      frontImage: idDoc.fileUrl,
+    };
 
-    const drivingLicense =
-      form.licenseNo || licenseDoc
-        ? {
-            number: form.licenseNo || undefined,
-            frontImage: licenseDoc?.fileUrl,
-          }
-        : undefined;
+    const drivingLicense = {
+      number: form.licenseNo,
+      frontImage: licenseDoc.fileUrl,
+    };
 
     try {
       if (isEdit && driverId) {
@@ -149,8 +157,8 @@ export default function DriverForm({ driverId }: DriverFormProps) {
             fatherName: form.fatherName || undefined,
             motherName: form.motherName || undefined,
             dateOfBirth: form.dateOfBirth || undefined,
-            ...(identification ? { identification } : {}),
-            ...(drivingLicense ? { drivingLicense } : {}),
+            identification,
+            drivingLicense,
           },
           token,
         );
@@ -165,8 +173,8 @@ export default function DriverForm({ driverId }: DriverFormProps) {
             fatherName: form.fatherName || undefined,
             motherName: form.motherName || undefined,
             dateOfBirth: form.dateOfBirth || undefined,
-            drivingLicense: drivingLicense || { number: form.licenseNo },
-            ...(identification ? { identification } : {}),
+            drivingLicense,
+            identification,
           },
           token,
         );
@@ -256,9 +264,7 @@ export default function DriverForm({ driverId }: DriverFormProps) {
           </Field>
 
           <div>
-            <label className="text-xs font-medium text-slate-500 mb-1.5 block">
-              ID type (optional)
-            </label>
+            <label className="text-xs font-medium text-slate-500 mb-1.5 block">ID type</label>
             <select value={form.idType} onChange={update("idType")} className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition">
               <option value="nid">NID</option>
               <option value="passport">Passport</option>
@@ -266,10 +272,11 @@ export default function DriverForm({ driverId }: DriverFormProps) {
           </div>
 
           <Field
-            label={form.idType === "passport" ? "Passport number (optional)" : "NID number (optional)"}
+            label={form.idType === "passport" ? "Passport number" : "NID number"}
             icon={IdCard}
           >
             <input
+              required
               value={form.idNumber}
               onChange={update("idNumber")}
               placeholder="XXXXXXXXXX"
@@ -303,7 +310,7 @@ export default function DriverForm({ driverId }: DriverFormProps) {
         </div>
 
         <div>
-          <h2 className="text-sm font-semibold text-slate-800 mb-3">Documents (optional)</h2>
+          <h2 className="text-sm font-semibold text-slate-800 mb-3">Documents</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <DocumentUpload
               label={form.idType === "passport" ? "Passport document" : "NID document"}
