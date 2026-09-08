@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Search, Plus } from "lucide-react";
+import { Search, Plus, Pencil } from "lucide-react";
 import { useUsers } from "@/hooks/useUsers";
 
 const statusStyle: Record<string, string> = {
@@ -67,6 +67,7 @@ export default function DriverList() {
                 <th className="py-3 px-4">License no.</th>
                 <th className="py-3 px-4">Driver status</th>
                 <th className="py-3 px-4">Account status</th>
+                <th className="py-3 px-4" />
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -99,6 +100,15 @@ export default function DriverList() {
                     >
                       {d.centralStatus as string}
                     </span>
+                  </td>
+                  <td className="py-3 px-4 text-right">
+                    <Link
+                      href={`/dashboard/drivers/${d.id}/edit`}
+                      className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 transition"
+                    >
+                      <Pencil className="w-3.5 h-3.5" />
+                      Edit
+                    </Link>
                   </td>
                 </tr>
               ))}

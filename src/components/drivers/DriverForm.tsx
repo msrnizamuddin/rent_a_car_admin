@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { User, Phone, Mail, IdCard, Lock } from "lucide-react";
+import { User, Phone, Mail, IdCard, Lock, Calendar, Users } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { createStaff } from "@/services/authService";
+import { createStaff, getUserById, updateUser } from "@/services/authService";
 import { formatApiError } from "@/lib/errorMessages";
+import DocumentUpload from "@/components/shared/DocumentUpload";
+import type { UploadedDocument } from "@/services/documentService";
 
 const inputClass =
   "w-full h-12 pl-11 pr-4 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition";
@@ -30,22 +32,86 @@ function Field({
   );
 }
 
-export default function DriverForm() {
+type DriverFormProps = {
+  // Present in edit mode — PATCHes the existing driver instead of creating one.
+  driverId?: string;
+};
+
+const emptyForm = {
+  name: "",
+  phone: "",
+  email: "",
+  password: "",
+  fatherName: "",
+  motherName: "",
+  dateOfBirth: "",
+  idType: "nid" as "nid" | "passport",
+  idNumber: "",
+  licenseNo: "",
+};
+
+export default function DriverForm({ driverId }: DriverFormProps) {
   const router = useRouter();
   const { token } = useAuth();
+  const isEdit = Boolean(driverId);
 
-  const [form, setForm] = useState({
-    name: "",
-    phone: "",
-    email: "",
-    password: "",
-    licenseNo: "",
-  });
+  const [form, setForm] = useState(emptyForm);
+  const [idDoc, setIdDoc] = useState<UploadedDocument | null>(null);
+  const [licenseDoc, setLicenseDoc] = useState<UploadedDocument | null>(null);
+  const [loading, setLoading] = useState(isEdit);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
+  useEffect(() => {
+    if (!driverId || !token) return;
+
+    setLoading(true);
+    getUserById(driverId, token)
+      .then((user) => {
+        const identification = (user.identification as Record<string, unknown>) || {};
+        const drivingLicense = (user.drivingLicense as Record<string, unknown>) || {};
+
+        setForm({
+          ...emptyForm,
+          name: (user.fullName as string) || "",
+          phone: (user.mobileNumber as string) || "",
+          email: (user.email as string) || "",
+          fatherName: (user.fatherName as string) || "",
+          motherName: (user.motherName as string) || "",
+          dateOfBirth: user.dateOfBirth ? String(user.dateOfBirth).slice(0, 10) : "",
+          idType: (identification.type as "nid" | "passport") || "nid",
+          idNumber: (identification.number as string) || "",
+          licenseNo: (drivingLicense.number as string) || "",
+        });
+
+        if (identification.frontImage) {
+          setIdDoc({
+            id: "existing-id",
+            ownerType: null,
+            ownerId: null,
+            category: (identification.type as string) || "nid",
+            status: "existing",
+            fileUrl: identification.frontImage as string,
+          });
+        }
+        if (drivingLicense.frontImage) {
+          setLicenseDoc({
+            id: "existing-license",
+            ownerType: null,
+            ownerId: null,
+            category: "driving_license",
+            status: "existing",
+            fileUrl: drivingLicense.frontImage as string,
+          });
+        }
+      })
+      .catch((err) => setError(formatApiError(err, "Could not load driver.")))
+      .finally(() => setLoading(false));
+  }, [driverId, token]);
+
   const update =
-    (key: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    (key: keyof typeof emptyForm) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
       setForm((prev) => ({ ...prev, [key]: e.target.value }));
 
   const handleSubmit = async (e: FormEvent) => {
@@ -55,32 +121,80 @@ export default function DriverForm() {
     setError("");
     setSubmitting(true);
 
+    const identification =
+      form.idNumber || idDoc
+        ? {
+            type: form.idType,
+            number: form.idNumber || undefined,
+            frontImage: idDoc?.fileUrl,
+          }
+        : undefined;
+
+    const drivingLicense =
+      form.licenseNo || licenseDoc
+        ? {
+            number: form.licenseNo || undefined,
+            frontImage: licenseDoc?.fileUrl,
+          }
+        : undefined;
+
     try {
-      await createStaff(
-        {
-          role: "driver",
-          fullName: form.name,
-          mobileNumber: form.phone,
-          email: form.email || undefined,
-          password: form.password,
-          drivingLicense: { number: form.licenseNo },
-        },
-        token,
-      );
+      if (isEdit && driverId) {
+        await updateUser(
+          driverId,
+          {
+            fullName: form.name,
+            mobileNumber: form.phone,
+            email: form.email || undefined,
+            fatherName: form.fatherName || undefined,
+            motherName: form.motherName || undefined,
+            dateOfBirth: form.dateOfBirth || undefined,
+            ...(identification ? { identification } : {}),
+            ...(drivingLicense ? { drivingLicense } : {}),
+          },
+          token,
+        );
+      } else {
+        await createStaff(
+          {
+            role: "driver",
+            fullName: form.name,
+            mobileNumber: form.phone,
+            email: form.email || undefined,
+            password: form.password,
+            fatherName: form.fatherName || undefined,
+            motherName: form.motherName || undefined,
+            dateOfBirth: form.dateOfBirth || undefined,
+            drivingLicense: drivingLicense || { number: form.licenseNo },
+            ...(identification ? { identification } : {}),
+          },
+          token,
+        );
+      }
 
       router.push("/dashboard/drivers");
     } catch (err) {
-      setError(formatApiError(err, "Could not add driver, please try again."));
+      setError(
+        formatApiError(err, `Could not ${isEdit ? "update" : "add"} driver, please try again.`),
+      );
       setSubmitting(false);
     }
   };
 
+  if (loading) {
+    return <p className="text-sm text-slate-400">Loading driver…</p>;
+  }
+
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-xl font-semibold text-slate-900">Add driver</h1>
+        <h1 className="text-xl font-semibold text-slate-900">
+          {isEdit ? "Edit driver" : "Add driver"}
+        </h1>
         <p className="text-sm text-slate-500">
-          Enter driver details to add them to the fleet.
+          {isEdit
+            ? "Update this driver's profile details."
+            : "Enter driver details to add them to the fleet."}
         </p>
       </div>
 
@@ -116,9 +230,56 @@ export default function DriverForm() {
             />
           </Field>
 
+          <Field label="Father's name (optional)" icon={Users}>
+            <input
+              value={form.fatherName}
+              onChange={update("fatherName")}
+              className={inputClass}
+            />
+          </Field>
+
+          <Field label="Mother's name (optional)" icon={Users}>
+            <input
+              value={form.motherName}
+              onChange={update("motherName")}
+              className={inputClass}
+            />
+          </Field>
+
+          <Field label="Date of birth (optional)" icon={Calendar}>
+            <input
+              type="date"
+              value={form.dateOfBirth}
+              onChange={update("dateOfBirth")}
+              className={inputClass}
+            />
+          </Field>
+
+          <div>
+            <label className="text-xs font-medium text-slate-500 mb-1.5 block">
+              ID type (optional)
+            </label>
+            <select value={form.idType} onChange={update("idType")} className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition">
+              <option value="nid">NID</option>
+              <option value="passport">Passport</option>
+            </select>
+          </div>
+
+          <Field
+            label={form.idType === "passport" ? "Passport number (optional)" : "NID number (optional)"}
+            icon={IdCard}
+          >
+            <input
+              value={form.idNumber}
+              onChange={update("idNumber")}
+              placeholder="XXXXXXXXXX"
+              className={inputClass}
+            />
+          </Field>
+
           <Field label="License number" icon={IdCard}>
             <input
-              required
+              required={!isEdit}
               value={form.licenseNo}
               onChange={update("licenseNo")}
               placeholder="DL-XXXXXXX"
@@ -126,17 +287,43 @@ export default function DriverForm() {
             />
           </Field>
 
-          <Field label="Temporary password" icon={Lock}>
-            <input
-              required
-              minLength={8}
-              type="password"
-              value={form.password}
-              onChange={update("password")}
-              placeholder="At least 8 characters"
-              className={inputClass}
+          {!isEdit && (
+            <Field label="Temporary password" icon={Lock}>
+              <input
+                required
+                minLength={8}
+                type="password"
+                value={form.password}
+                onChange={update("password")}
+                placeholder="At least 8 characters"
+                className={inputClass}
+              />
+            </Field>
+          )}
+        </div>
+
+        <div>
+          <h2 className="text-sm font-semibold text-slate-800 mb-3">Documents (optional)</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <DocumentUpload
+              label={form.idType === "passport" ? "Passport document" : "NID document"}
+              category={form.idType}
+              ownerType={isEdit ? "user" : undefined}
+              ownerId={isEdit ? driverId : undefined}
+              value={idDoc}
+              onUploaded={setIdDoc}
+              onRemove={() => setIdDoc(null)}
             />
-          </Field>
+            <DocumentUpload
+              label="Driving license document"
+              category="driving_license"
+              ownerType={isEdit ? "user" : undefined}
+              ownerId={isEdit ? driverId : undefined}
+              value={licenseDoc}
+              onUploaded={setLicenseDoc}
+              onRemove={() => setLicenseDoc(null)}
+            />
+          </div>
         </div>
 
         {error && <p className="text-sm font-medium text-red-500">{error}</p>}
@@ -147,7 +334,7 @@ export default function DriverForm() {
             disabled={submitting}
             className="h-11 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-sm font-semibold transition"
           >
-            {submitting ? "Saving..." : "Save driver"}
+            {submitting ? "Saving..." : isEdit ? "Save changes" : "Save driver"}
           </button>
           <button
             type="button"

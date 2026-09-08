@@ -101,3 +101,48 @@ export const apiPatch = <T = unknown>(path: string, body?: unknown, options?: Om
 
 export const apiDelete = <T = unknown>(path: string, options?: Omit<RequestOptions, "method" | "body">) =>
   apiRequest<T>(path, { ...options, method: "DELETE" });
+
+// Separate from apiRequest because multipart bodies must NOT get a
+// Content-Type header set manually — the browser needs to add its own
+// boundary — and must not be JSON.stringify'd.
+export async function apiUpload<T = unknown>(
+  path: string,
+  formData: FormData,
+  { token, signal }: { token?: string | null; signal?: AbortSignal } = {},
+): Promise<T> {
+  const headers: Record<string, string> = { Accept: "application/json" };
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  let response: Response;
+
+  try {
+    response = await fetch(buildUrl(path), {
+      method: "POST",
+      headers,
+      body: formData,
+      signal,
+    });
+  } catch {
+    throw new ApiError(
+      "Could not reach the server. Check your connection and try again.",
+      0,
+    );
+  }
+
+  const text = await response.text();
+  const payload = text ? JSON.parse(text) : {};
+
+  if (!response.ok || payload.success === false) {
+    const fieldErrors = Array.isArray(payload.errors) ? payload.errors : null;
+    throw new ApiError(
+      payload.message || "Something went wrong, please try again.",
+      response.status,
+      fieldErrors,
+    );
+  }
+
+  return payload.data as T;
+}
