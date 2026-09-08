@@ -87,6 +87,16 @@ export const menuConfig: MenuItem[] = [
     icon: BarChart3,
     href: "/dashboard/reports",
   },
+  {
+    key: "website",
+    label: "Website",
+    icon: Globe,
+    href: "/dashboard/offers",
+    submenu: [
+      { label: "Offers", href: "/dashboard/offers" },
+      { label: "Add offer", href: "/dashboard/offers/new" },
+    ],
+  },
 ];
 
 export const bottomMenuConfig: MenuItem[] = [
