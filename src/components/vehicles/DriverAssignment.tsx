@@ -66,7 +66,7 @@ export default function DriverAssignment({ vehicleId }: Props) {
             value={assignedDriverId || ""}
             onChange={(e) => handleAssign(e.target.value)}
             disabled={saving}
-            className="h-11 px-3.5 rounded-xl bg-slate-50 border border-slate-200 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition disabled:opacity-60"
+            className="h-11 px-3.5 rounded-xl bg-slate-50 border border-slate-200 text-sm text-black outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition disabled:opacity-60"
           >
             <option value="">Unassigned</option>
             {drivers.map((d) => (
