@@ -27,6 +27,7 @@ const ticket = (path = "") => `/ticket/web${path}`;
 const auditLog = (path = "") => `/audit-log/web${path}`;
 const document = (path = "") => `/document/web${path}`;
 const offer = (path = "") => `/offer/web${path}`;
+const driverApplication = (path = "") => `/driver-application/web${path}`;
 
 export const ENDPOINTS = {
   auth: {
@@ -150,5 +151,13 @@ export const ENDPOINTS = {
     list: offer("/"),
     all: offer("/all"),
     byId: (id: string) => offer(`/${id}`),
+  },
+
+  driverApplication: {
+    all: driverApplication("/all"),
+    search: driverApplication("/"),
+    byId: (id: string) => driverApplication(`/${id}`),
+    approve: (id: string) => driverApplication(`/${id}/approve`),
+    reject: (id: string) => driverApplication(`/${id}/reject`),
   },
 };
