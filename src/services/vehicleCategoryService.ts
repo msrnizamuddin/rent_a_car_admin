@@ -17,8 +17,12 @@ export function listVehicleCategories(token?: string) {
   return apiGet<VehicleCategory[]>(ENDPOINTS.vehicleCategory.all, { token });
 }
 
+export function getVehicleCategoryById(id: string, token?: string) {
+  return apiGet<VehicleCategory>(ENDPOINTS.vehicleCategory.byId(id), { token });
+}
+
 export function createVehicleCategory(
-  payload: { name: string; description?: string; image?: string },
+  payload: { name: string; description?: string; image?: string; status?: string },
   token: string,
 ) {
   return apiPost<VehicleCategory>(ENDPOINTS.vehicleCategory.list, payload, { token });
