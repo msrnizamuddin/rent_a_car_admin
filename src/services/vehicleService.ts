@@ -26,6 +26,9 @@ export type Vehicle = {
   fuelType: string[];
   transmission: string;
   isAC: boolean;
+  // New vehicles are priced higher than old ones in the same category —
+  // see the Pricing module (picks a rule by category + condition).
+  condition: "new" | "old";
   features: string[];
   color: string | null;
   location: VehicleLocation | null;
@@ -84,6 +87,7 @@ export type CreateVehiclePayload = {
   fuelType: string[];
   transmission: string;
   isAC?: boolean;
+  condition?: "new" | "old";
   features?: string[];
   color?: string;
   location?: VehicleLocation;

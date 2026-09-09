@@ -19,6 +19,10 @@ export const FUEL_TYPES = ["cng", "diesel", "electric", "hybrid", "petrol"] as c
 
 export const TRANSMISSIONS = ["manual", "automatic"] as const;
 
+// New vehicles command a higher price than old ones in the same category —
+// see the Pricing module, which picks a rule by category + condition.
+export const VEHICLE_CONDITIONS = ["new", "old"] as const;
+
 // Wire format uses "on-trip" (hyphenated) — see vehicle.model.js's
 // AVAILABILITY_TO_ENUM/FROM_ENUM mapping on the backend.
 export const AVAILABILITY_STATUSES = [
