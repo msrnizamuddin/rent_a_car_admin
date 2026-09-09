@@ -18,6 +18,7 @@ import {
   VEHICLE_TYPES,
   FUEL_TYPES,
   TRANSMISSIONS,
+  VEHICLE_CONDITIONS,
 } from "@/constants/vehicle.constants";
 
 const inputClass =
@@ -45,6 +46,7 @@ const emptyForm = {
   modelYear: String(new Date().getFullYear()),
   seatingCapacity: "5",
   transmission: TRANSMISSIONS[0] as string,
+  condition: VEHICLE_CONDITIONS[0] as string,
   color: "",
   ownerDriverId: "",
 };
@@ -135,6 +137,7 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
           modelYear: String(vehicle.modelYear || new Date().getFullYear()),
           seatingCapacity: String(vehicle.seatingCapacity || 5),
           transmission: vehicle.transmission || (TRANSMISSIONS[0] as string),
+          condition: vehicle.condition || (VEHICLE_CONDITIONS[0] as string),
           color: vehicle.color || "",
           ownerDriverId: vehicle.ownerDriverId || "",
         });
@@ -207,6 +210,7 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
       seatingCapacity: Number(form.seatingCapacity),
       fuelType: fuelTypes,
       transmission: form.transmission,
+      condition: form.condition as "new" | "old",
       color: form.color || undefined,
     };
 
@@ -348,6 +352,20 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
               {TRANSMISSIONS.map((t) => (
                 <option key={t} value={t}>
                   {t}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className={labelClass}>Condition</label>
+            <select
+              value={form.condition}
+              onChange={update("condition")}
+              className={inputClass}
+            >
+              {VEHICLE_CONDITIONS.map((c) => (
+                <option key={c} value={c}>
+                  {c === "new" ? "New" : "Old"}
                 </option>
               ))}
             </select>

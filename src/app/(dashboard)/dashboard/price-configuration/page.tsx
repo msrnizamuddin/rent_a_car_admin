@@ -1,5 +1,5 @@
-import PriceConfiguration from "@/components/pricing/PriceConfiguration";
+import PricingList from "@/components/pricing/PricingList";
 
 export default function PriceConfigurationPage() {
-  return <PriceConfiguration />;
+  return <PricingList />;
 }
