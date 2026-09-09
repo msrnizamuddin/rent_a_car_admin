@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Search, Plus, Pencil, Eye } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useUsers } from "@/hooks/useUsers";
@@ -13,7 +14,8 @@ import { DRIVER_STATUSES, CENTRAL_STATUSES } from "@/constants/user.constants";
 
 export default function DriverList() {
   const { token } = useAuth();
-  const [search, setSearch] = useState("");
+  const searchParams = useSearchParams();
+  const [search, setSearch] = useState(() => searchParams.get("q") || "");
   const { users, pagination, loading, error, reload } = useUsers({
     role: "driver",
     search: search || undefined,
@@ -55,28 +57,28 @@ export default function DriverList() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6 gap-4 flex-wrap">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-xl font-semibold text-slate-900">Drivers</h1>
-          <p className="text-sm text-slate-500">
+          <h1 className="text-xl font-semibold text-black">Drivers</h1>
+          <p className="text-sm text-black">
             {pagination?.total ?? users.length} total drivers
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="relative flex-1 min-w-[180px] sm:flex-none sm:w-64">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-black" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search drivers"
-              className="h-11 w-64 pl-10 pr-4 rounded-xl bg-slate-50 border border-slate-200 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition"
+              className="h-11 w-full pl-10 pr-4 rounded-xl bg-slate-50 border border-slate-200 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition"
             />
           </div>
           <Link
             href="/dashboard/drivers/new"
-            className="h-11 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold flex items-center gap-2 transition"
+            className="h-11 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold flex items-center gap-2 transition shrink-0"
           >
             <Plus className="w-4 h-4" />
             Add driver
@@ -87,16 +89,16 @@ export default function DriverList() {
       {actionError && <p className="mb-4 text-sm font-medium text-red-500">{actionError}</p>}
 
       {loading ? (
-        <p className="text-sm text-slate-400">Loading drivers…</p>
+        <p className="text-sm text-black">Loading drivers…</p>
       ) : error ? (
         <p className="text-sm text-red-500">Couldn&apos;t load drivers.</p>
       ) : users.length === 0 ? (
-        <p className="text-sm text-slate-400">No drivers found.</p>
+        <p className="text-sm text-black">No drivers found.</p>
       ) : (
         <div className="overflow-x-auto rounded-2xl border border-slate-100">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-slate-50 text-left text-xs font-semibold text-slate-500">
+              <tr className="bg-slate-50 text-left text-xs font-semibold text-black">
                 <th className="py-3 px-4">Driver</th>
                 <th className="py-3 px-4">Phone</th>
                 <th className="py-3 px-4">License no.</th>
@@ -113,13 +115,13 @@ export default function DriverList() {
                       <div className="w-9 h-9 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-xs font-semibold shrink-0">
                         {(d.fullName as string)?.charAt(0).toUpperCase()}
                       </div>
-                      <span className="font-medium text-slate-900">
+                      <span className="font-medium text-black">
                         {d.fullName as string}
                       </span>
                     </div>
                   </td>
-                  <td className="py-3 px-4 text-slate-600">{d.mobileNumber}</td>
-                  <td className="py-3 px-4 text-slate-600">
+                  <td className="py-3 px-4 text-black">{d.mobileNumber}</td>
+                  <td className="py-3 px-4 text-black">
                     {(d.drivingLicense as { number?: string } | null)?.number || "—"}
                   </td>
                   <td className="py-3 px-4">
@@ -144,7 +146,7 @@ export default function DriverList() {
                     <div className="flex items-center justify-end gap-3">
                       <Link
                         href={`/dashboard/drivers/${d.id}`}
-                        className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:text-slate-800 transition"
+                        className="inline-flex items-center gap-1.5 text-xs font-medium text-black hover:text-blue-600 transition"
                       >
                         <Eye className="w-3.5 h-3.5" />
                         View

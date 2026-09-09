@@ -24,7 +24,7 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
   if (!isReady || !isAuthenticated) {
     return (
       <div className="flex h-screen items-center justify-center bg-[#EEF1F6]">
-        <p className="text-sm text-slate-400">Loading...</p>
+        <p className="text-sm text-black">Loading...</p>
       </div>
     );
   }

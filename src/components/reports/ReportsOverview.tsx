@@ -5,12 +5,12 @@ import { useReports } from "@/hooks/useReports";
 function Card({ title, rows }: { title: string; rows: [string, string | number][] }) {
   return (
     <div className="rounded-2xl border border-slate-100 p-5">
-      <h3 className="text-sm font-semibold text-slate-800 mb-4">{title}</h3>
+      <h3 className="text-sm font-semibold text-black mb-4">{title}</h3>
       <dl className="space-y-2.5">
         {rows.map(([label, value]) => (
           <div key={label} className="flex items-center justify-between text-sm">
-            <dt className="text-slate-500">{label}</dt>
-            <dd className="font-medium text-slate-900">{value}</dd>
+            <dt className="text-black">{label}</dt>
+            <dd className="font-medium text-black">{value}</dd>
           </div>
         ))}
       </dl>
@@ -21,15 +21,15 @@ function Card({ title, rows }: { title: string; rows: [string, string | number][
 export default function ReportsOverview() {
   const { reports, loading, error } = useReports();
 
-  if (loading) return <p className="text-sm text-slate-400">Loading reports…</p>;
+  if (loading) return <p className="text-sm text-black">Loading reports…</p>;
   if (error || !reports)
     return <p className="text-sm text-red-500">Couldn&apos;t load reports.</p>;
 
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-xl font-semibold text-slate-900">Reports</h1>
-        <p className="text-sm text-slate-500">
+        <h1 className="text-xl font-semibold text-black">Reports</h1>
+        <p className="text-sm text-black">
           Revenue, fleet, driver and trip performance at a glance.
         </p>
       </div>
@@ -91,14 +91,14 @@ export default function ReportsOverview() {
 
       {reports.vehicles.mostRentedVehicles.length > 0 && (
         <div className="mt-6 rounded-2xl border border-slate-100 p-5">
-          <h3 className="text-sm font-semibold text-slate-800 mb-4">
+          <h3 className="text-sm font-semibold text-black mb-4">
             Most rented vehicles
           </h3>
           <ul className="space-y-2 text-sm">
             {reports.vehicles.mostRentedVehicles.map((v) => (
               <li key={v.vehicleId} className="flex items-center justify-between">
-                <span className="text-slate-600">{v.vehicleId.slice(0, 8)}</span>
-                <span className="font-medium text-slate-900">{v.tripCount} trips</span>
+                <span className="text-black">{v.vehicleId.slice(0, 8)}</span>
+                <span className="font-medium text-black">{v.tripCount} trips</span>
               </li>
             ))}
           </ul>
@@ -107,14 +107,14 @@ export default function ReportsOverview() {
 
       {reports.drivers.driverEarnings.length > 0 && (
         <div className="mt-6 rounded-2xl border border-slate-100 p-5">
-          <h3 className="text-sm font-semibold text-slate-800 mb-4">Driver earnings</h3>
+          <h3 className="text-sm font-semibold text-black mb-4">Driver earnings</h3>
           <ul className="space-y-2 text-sm">
             {reports.drivers.driverEarnings.map((d) => (
               <li key={d.driverId} className="flex items-center justify-between">
-                <span className="text-slate-600">
+                <span className="text-black">
                   {d.driverId.slice(0, 8)} · {d.completedTrips} trips
                 </span>
-                <span className="font-medium text-slate-900">
+                <span className="font-medium text-black">
                   ৳{d.totalEarnings.toLocaleString()}
                 </span>
               </li>

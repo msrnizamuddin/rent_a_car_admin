@@ -28,7 +28,7 @@ function ActionCard({
 }) {
   return (
     <div className="rounded-2xl border border-slate-100 p-5">
-      <h3 className="text-sm font-semibold text-slate-800 mb-3">{title}</h3>
+      <h3 className="text-sm font-semibold text-black mb-3">{title}</h3>
       {children}
     </div>
   );
@@ -50,7 +50,7 @@ export default function BookingDetail({ id }: { id: string }) {
   const [vehicleId, setVehicleId] = useState("");
   const [driverId, setDriverId] = useState("");
 
-  if (loading) return <p className="text-sm text-slate-400">Loading booking…</p>;
+  if (loading) return <p className="text-sm text-black">Loading booking…</p>;
   if (error || !rentalRequest)
     return <p className="text-sm text-red-500">Couldn&apos;t load this booking.</p>;
 
@@ -72,17 +72,17 @@ export default function BookingDetail({ id }: { id: string }) {
     <div>
       <Link
         href="/dashboard/bookings"
-        className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 mb-4"
+        className="inline-flex items-center gap-1.5 text-sm text-black hover:text-black mb-4"
       >
         <ArrowLeft className="w-4 h-4" /> Back to bookings
       </Link>
 
       <div className="mb-6 flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-xl font-semibold text-slate-900">
+          <h1 className="text-xl font-semibold text-black">
             Booking {rentalRequest.id.slice(0, 8)}
           </h1>
-          <p className="text-sm text-slate-500 capitalize">
+          <p className="text-sm text-black capitalize">
             {rentalRequest.status.replace(/_/g, " ")} · {rentalRequest.tripType} trip
           </p>
         </div>
@@ -94,31 +94,31 @@ export default function BookingDetail({ id }: { id: string }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
         <div className="rounded-2xl border border-slate-100 p-5">
-          <h3 className="text-sm font-semibold text-slate-800 mb-3">Trip details</h3>
+          <h3 className="text-sm font-semibold text-black mb-3">Trip details</h3>
           <dl className="space-y-2 text-sm">
             <div className="flex justify-between">
-              <dt className="text-slate-500">Pickup</dt>
-              <dd className="text-slate-800">
+              <dt className="text-black">Pickup</dt>
+              <dd className="text-black">
                 {rentalRequest.pickupLocation?.city || "—"} · {rentalRequest.pickupDate}{" "}
                 {rentalRequest.pickupTime}
               </dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-slate-500">Destination</dt>
-              <dd className="text-slate-800">{rentalRequest.destination?.city || "—"}</dd>
+              <dt className="text-black">Destination</dt>
+              <dd className="text-black">{rentalRequest.destination?.city || "—"}</dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-slate-500">Passengers</dt>
-              <dd className="text-slate-800">{rentalRequest.passengerCount}</dd>
+              <dt className="text-black">Passengers</dt>
+              <dd className="text-black">{rentalRequest.passengerCount}</dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-slate-500">Contact</dt>
-              <dd className="text-slate-800">{rentalRequest.contactNumber}</dd>
+              <dt className="text-black">Contact</dt>
+              <dd className="text-black">{rentalRequest.contactNumber}</dd>
             </div>
             {rentalRequest.specialInstructions && (
               <div className="flex justify-between gap-4">
-                <dt className="text-slate-500 shrink-0">Notes</dt>
-                <dd className="text-slate-800 text-right">
+                <dt className="text-black shrink-0">Notes</dt>
+                <dd className="text-black text-right">
                   {rentalRequest.specialInstructions}
                 </dd>
               </div>
@@ -127,38 +127,38 @@ export default function BookingDetail({ id }: { id: string }) {
         </div>
 
         <div className="rounded-2xl border border-slate-100 p-5">
-          <h3 className="text-sm font-semibold text-slate-800 mb-3">Fare & assignment</h3>
+          <h3 className="text-sm font-semibold text-black mb-3">Fare & assignment</h3>
           <dl className="space-y-2 text-sm">
             <div className="flex justify-between">
-              <dt className="text-slate-500">Estimated rent</dt>
-              <dd className="text-slate-800">
+              <dt className="text-black">Estimated rent</dt>
+              <dd className="text-black">
                 {rentalRequest.estimatedRent?.total
                   ? `৳${rentalRequest.estimatedRent.total}`
                   : "—"}
               </dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-slate-500">Final rent</dt>
-              <dd className="text-slate-800">
+              <dt className="text-black">Final rent</dt>
+              <dd className="text-black">
                 {rentalRequest.finalRent ? `৳${rentalRequest.finalRent}` : "—"}
               </dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-slate-500">Assigned vehicle</dt>
-              <dd className="text-slate-800">
+              <dt className="text-black">Assigned vehicle</dt>
+              <dd className="text-black">
                 {rentalRequest.assignedVehicleId?.slice(0, 8) || "—"}
               </dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-slate-500">Assigned driver</dt>
-              <dd className="text-slate-800">
+              <dt className="text-black">Assigned driver</dt>
+              <dd className="text-black">
                 {rentalRequest.assignedDriverId?.slice(0, 8) || "—"}
               </dd>
             </div>
             {rentalRequest.adminNotes && (
               <div className="flex justify-between gap-4">
-                <dt className="text-slate-500 shrink-0">Admin notes</dt>
-                <dd className="text-slate-800 text-right">{rentalRequest.adminNotes}</dd>
+                <dt className="text-black shrink-0">Admin notes</dt>
+                <dd className="text-black text-right">{rentalRequest.adminNotes}</dd>
               </div>
             )}
           </dl>

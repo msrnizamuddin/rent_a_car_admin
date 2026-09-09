@@ -21,7 +21,7 @@ function Section({
         onClick={() => setOpen((v) => !v)}
         className="w-full flex items-center justify-between text-left"
       >
-        <span className="flex items-center gap-2 text-xs font-semibold tracking-wide text-slate-500">
+        <span className="flex items-center gap-2 text-xs font-semibold tracking-wide text-black">
           {title}
           {badge && (
             <span className="w-4 h-4 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center">
@@ -32,7 +32,7 @@ function Section({
         {open ? (
           <ChevronUp className="w-4 h-4 text-blue-600" />
         ) : (
-          <ChevronDown className="w-4 h-4 text-slate-400" />
+          <ChevronDown className="w-4 h-4 text-black" />
         )}
       </button>
       {open && <div className="mt-4">{children}</div>}
@@ -56,15 +56,15 @@ export default function FilterPanel({ onClose }: { onClose?: () => void }) {
   return (
     <div className="w-[300px] h-screen bg-white border-r border-slate-100 flex flex-col">
       <div className="flex items-center justify-between px-6 pt-6 pb-4">
-        <h2 className="text-base font-semibold text-slate-900">Filter by</h2>
+        <h2 className="text-base font-semibold text-black">Filter by</h2>
         <div className="flex items-center gap-3">
-          <button className="text-xs font-medium text-slate-400 hover:text-slate-600">
+          <button className="text-xs font-medium text-black hover:text-black">
             Reset all
           </button>
           {onClose && (
             <button
               onClick={onClose}
-              className="text-slate-400 hover:text-slate-600"
+              className="text-black hover:text-black"
             >
               <X className="w-4 h-4" />
             </button>
@@ -75,7 +75,7 @@ export default function FilterPanel({ onClose }: { onClose?: () => void }) {
       <div className="flex-1 overflow-y-auto px-6">
         {/* Search */}
         <div className="relative mb-4">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-black" />
           <input
             type="text"
             placeholder="Search"
@@ -99,7 +99,7 @@ export default function FilterPanel({ onClose }: { onClose?: () => void }) {
                 className={`h-9 px-4 rounded-lg text-sm font-medium transition ${
                   rentalType === key
                     ? "bg-blue-600 text-white"
-                    : "bg-slate-50 text-slate-600 hover:bg-slate-100"
+                    : "bg-slate-50 text-black hover:bg-slate-100"
                 }`}
               >
                 {label}
@@ -110,7 +110,7 @@ export default function FilterPanel({ onClose }: { onClose?: () => void }) {
 
         {/* Available now toggle */}
         <div className="flex items-center justify-between py-4 border-b border-slate-100">
-          <span className="text-xs font-semibold tracking-wide text-slate-500">
+          <span className="text-xs font-semibold tracking-wide text-black">
             AVAILABLE NOW ONLY
           </span>
           <Toggle />
@@ -123,10 +123,10 @@ export default function FilterPanel({ onClose }: { onClose?: () => void }) {
 
         {/* Car brand / model (collapsed by default, count badges) */}
         <Section title="CAR BRAND" badge={2} defaultOpen={false}>
-          <div className="text-sm text-slate-500">Ford, Toyota</div>
+          <div className="text-sm text-black">Ford, Toyota</div>
         </Section>
         <Section title="CAR MODEL & YEAR" badge={3} defaultOpen={false}>
-          <div className="text-sm text-slate-500">Focus, Kuga, Corolla</div>
+          <div className="text-sm text-black">Focus, Kuga, Corolla</div>
         </Section>
 
         {/* Body style */}
@@ -144,7 +144,7 @@ export default function FilterPanel({ onClose }: { onClose?: () => void }) {
             ].map((v) => (
               <label
                 key={v}
-                className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer select-none"
+                className="flex items-center gap-2 text-sm text-black cursor-pointer select-none"
               >
                 <input
                   type="checkbox"
@@ -168,7 +168,7 @@ export default function FilterPanel({ onClose }: { onClose?: () => void }) {
             ].map(({ label, count }) => (
               <label
                 key={label}
-                className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer select-none"
+                className="flex items-center gap-2 text-sm text-black cursor-pointer select-none"
               >
                 <input
                   type="radio"
@@ -178,7 +178,7 @@ export default function FilterPanel({ onClose }: { onClose?: () => void }) {
                   className="w-4 h-4 border-slate-300 text-blue-600 focus:ring-blue-500"
                 />
                 {label}
-                <span className="text-slate-400">{count}</span>
+                <span className="text-black">{count}</span>
               </label>
             ))}
           </div>
@@ -190,7 +190,7 @@ export default function FilterPanel({ onClose }: { onClose?: () => void }) {
             {["Diesel", "Electric", "Petrol", "Hybrid"].map((v) => (
               <label
                 key={v}
-                className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer select-none"
+                className="flex items-center gap-2 text-sm text-black cursor-pointer select-none"
               >
                 <input
                   type="checkbox"
@@ -247,12 +247,12 @@ function PriceRangeSlider({ min, max }: { min: number; max: number }) {
       </div>
       <div className="flex items-center gap-3">
         <div className="flex-1 h-10 rounded-lg bg-slate-50 border border-slate-200 flex items-center px-3 text-sm">
-          <span className="text-slate-400 mr-2">From</span>
-          <span className="font-medium text-slate-900">${from}</span>
+          <span className="text-black mr-2">From</span>
+          <span className="font-medium text-black">${from}</span>
         </div>
         <div className="flex-1 h-10 rounded-lg bg-slate-50 border border-slate-200 flex items-center px-3 text-sm">
-          <span className="text-slate-400 mr-2">To</span>
-          <span className="font-medium text-slate-900">${to}</span>
+          <span className="text-black mr-2">To</span>
+          <span className="font-medium text-black">${to}</span>
         </div>
       </div>
     </div>

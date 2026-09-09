@@ -23,11 +23,11 @@ export default function StatusBadgeSelect({ value, options, styleMap, onChange, 
       disabled={disabled}
       onChange={(e) => onChange(e.target.value)}
       className={`px-2.5 py-1 rounded-full text-xs font-medium capitalize border-0 outline-none cursor-pointer transition disabled:opacity-60 disabled:cursor-not-allowed ${
-        styleMap[value] || "bg-slate-100 text-slate-600"
+        styleMap[value] || "bg-slate-100 text-black"
       }`}
     >
       {options.map((o) => (
-        <option key={o} value={o} className="text-slate-900 bg-white">
+        <option key={o} value={o} className="text-black bg-white">
           {o}
         </option>
       ))}

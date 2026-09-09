@@ -17,9 +17,9 @@ import {
 } from "@/constants/vehicle.constants";
 
 const inputClass =
-  "w-full h-11 px-3.5 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition";
+  "w-full h-11 px-3.5 rounded-xl bg-slate-50 border border-slate-200 text-sm text-black placeholder:text-black outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition";
 
-const labelClass = "text-xs font-medium text-slate-500 mb-1.5 block";
+const labelClass = "text-xs font-medium text-black mb-1.5 block";
 
 // Minimum required for a vehicle to be considered "fully documented":
 // 5 plate-visible photos + registration copy + tax token + fitness cert.
@@ -63,11 +63,11 @@ function CollapsibleSection({
         onClick={() => setOpen((v) => !v)}
         className="w-full flex items-center justify-between px-4 py-3 text-left"
       >
-        <span className="text-sm font-semibold text-slate-800">{title}</span>
+        <span className="text-sm font-semibold text-black">{title}</span>
         {open ? (
-          <ChevronDown className="w-4 h-4 text-slate-400" />
+          <ChevronDown className="w-4 h-4 text-black" />
         ) : (
-          <ChevronRight className="w-4 h-4 text-slate-400" />
+          <ChevronRight className="w-4 h-4 text-black" />
         )}
       </button>
       {open && <div className="px-4 pb-4">{children}</div>}
@@ -197,16 +197,16 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
   };
 
   if (loading) {
-    return <p className="text-sm text-slate-400">Loading vehicle…</p>;
+    return <p className="text-sm text-black">Loading vehicle…</p>;
   }
 
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-xl font-semibold text-slate-900">
+        <h1 className="text-xl font-semibold text-black">
           {isEdit ? "Edit vehicle" : "Add vehicle"}
         </h1>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-black">
           {isEdit ? "Update this vehicle's details." : "Enter vehicle details to add it to the fleet."}
         </p>
       </div>
@@ -338,7 +338,7 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
                   className={`h-9 px-3.5 rounded-lg border text-sm font-medium capitalize transition ${
                     checked
                       ? "bg-blue-600 border-blue-600 text-white"
-                      : "bg-slate-50 border-slate-200 text-slate-600 hover:border-blue-400"
+                      : "bg-slate-50 border-slate-200 text-black hover:border-blue-400"
                   }`}
                 >
                   {f}
@@ -352,7 +352,7 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
           title="Driver-owned vehicle (optional)"
           defaultOpen={Boolean(form.ownerDriverId)}
         >
-          <p className="text-xs text-slate-500 mb-3">
+          <p className="text-xs text-black mb-3">
             Set this when a driver brought their own car, rather than this being a company
             fleet vehicle any admin can assign.{" "}
             {isEdit
@@ -386,7 +386,7 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
           <button
             type="button"
             onClick={() => router.push("/dashboard/vehicles")}
-            className="h-11 px-6 rounded-xl border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 transition"
+            className="h-11 px-6 rounded-xl border border-slate-200 text-sm font-medium text-black hover:bg-slate-50 transition"
           >
             Cancel
           </button>
@@ -394,15 +394,15 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
       </form>
 
       <div className="max-w-3xl mt-6 border border-slate-100 rounded-2xl p-5">
-        <h2 className="text-sm font-semibold text-slate-800 mb-1">Vehicle documents</h2>
-        <p className="text-xs text-slate-500 mb-4">
+        <h2 className="text-sm font-semibold text-black mb-1">Vehicle documents</h2>
+        <p className="text-xs text-black mb-4">
           {REQUIRED_VEHICLE_PHOTOS} photos with the number plate visible, plus registration
           copy, tax token, and fitness certificate — {REQUIRED_VEHICLE_DOCS} total to mark this
           vehicle fully documented.
         </p>
 
         {!savedVehicleId ? (
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-black">
             Save the vehicle details above first — uploads need a saved vehicle to attach to.
           </p>
         ) : (
@@ -421,7 +421,7 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
             </div>
 
             <div>
-              <h3 className="text-sm font-semibold text-slate-800 mb-3">
+              <h3 className="text-sm font-semibold text-black mb-3">
                 Vehicle photos (number plate visible)
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -445,7 +445,7 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
             </div>
 
             <div>
-              <h3 className="text-sm font-semibold text-slate-800 mb-3">Paperwork</h3>
+              <h3 className="text-sm font-semibold text-black mb-3">Paperwork</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <DocumentUpload
                   label="Registration copy"

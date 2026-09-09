@@ -60,7 +60,7 @@ export default function ImageUpload({
             <button
               type="button"
               onClick={onRemove}
-              className="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/90 flex items-center justify-center text-slate-600 hover:text-red-500 transition"
+              className="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/90 flex items-center justify-center text-black hover:text-red-500 transition"
               aria-label="Remove image"
             >
               <X className="w-4 h-4" />
@@ -71,8 +71,8 @@ export default function ImageUpload({
         <label
           className={`flex flex-col items-center justify-center gap-2 h-40 rounded-xl border-2 border-dashed text-sm transition ${
             uploading
-              ? "border-slate-200 text-slate-400"
-              : "border-slate-300 text-slate-400 cursor-pointer hover:border-blue-400"
+              ? "border-slate-200 text-black"
+              : "border-slate-300 text-black cursor-pointer hover:border-blue-400"
           }`}
         >
           {uploading ? (

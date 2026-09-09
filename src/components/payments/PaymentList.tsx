@@ -10,7 +10,7 @@ const statusStyle: Record<string, string> = {
   pending: "bg-amber-50 text-amber-600",
   paid: "bg-green-50 text-green-600",
   failed: "bg-red-50 text-red-600",
-  refunded: "bg-slate-100 text-slate-500",
+  refunded: "bg-slate-100 text-black",
 };
 
 export default function PaymentList() {
@@ -50,8 +50,8 @@ export default function PaymentList() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-xl font-semibold text-slate-900">Payments</h1>
-        <p className="text-sm text-slate-500">{payments.length} total transactions</p>
+        <h1 className="text-xl font-semibold text-black">Payments</h1>
+        <p className="text-sm text-black">{payments.length} total transactions</p>
       </div>
 
       {actionError && (
@@ -59,16 +59,16 @@ export default function PaymentList() {
       )}
 
       {loading ? (
-        <p className="text-sm text-slate-400">Loading payments…</p>
+        <p className="text-sm text-black">Loading payments…</p>
       ) : error ? (
         <p className="text-sm text-red-500">Couldn&apos;t load payments.</p>
       ) : payments.length === 0 ? (
-        <p className="text-sm text-slate-400">No payments recorded yet.</p>
+        <p className="text-sm text-black">No payments recorded yet.</p>
       ) : (
         <div className="overflow-x-auto rounded-2xl border border-slate-100">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-slate-50 text-left text-xs font-semibold text-slate-500">
+              <tr className="bg-slate-50 text-left text-xs font-semibold text-black">
                 <th className="py-3 px-4">Payment</th>
                 <th className="py-3 px-4">Trip</th>
                 <th className="py-3 px-4">Amount</th>
@@ -80,16 +80,16 @@ export default function PaymentList() {
             <tbody className="divide-y divide-slate-100">
               {payments.map((p) => (
                 <tr key={p.id} className="hover:bg-slate-50/60 transition">
-                  <td className="py-3 px-4 font-medium text-slate-900">
+                  <td className="py-3 px-4 font-medium text-black">
                     {p.id.slice(0, 8)}
                   </td>
-                  <td className="py-3 px-4 text-slate-600">{p.tripId.slice(0, 8)}</td>
-                  <td className="py-3 px-4 text-slate-600">৳{p.amount}</td>
-                  <td className="py-3 px-4 capitalize text-slate-600">{p.method}</td>
+                  <td className="py-3 px-4 text-black">{p.tripId.slice(0, 8)}</td>
+                  <td className="py-3 px-4 text-black">৳{p.amount}</td>
+                  <td className="py-3 px-4 capitalize text-black">{p.method}</td>
                   <td className="py-3 px-4">
                     <span
                       className={`px-2.5 py-1 rounded-full text-xs font-medium capitalize ${
-                        statusStyle[p.status] || "bg-slate-100 text-slate-500"
+                        statusStyle[p.status] || "bg-slate-100 text-black"
                       }`}
                     >
                       {p.status}

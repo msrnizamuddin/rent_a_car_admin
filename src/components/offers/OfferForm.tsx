@@ -15,9 +15,9 @@ import {
 } from "@/constants/offer.constants";
 
 const inputClass =
-  "w-full h-11 pl-11 pr-4 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition";
+  "w-full h-11 pl-11 pr-4 rounded-xl bg-slate-50 border border-slate-200 text-sm text-black placeholder:text-black outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition";
 
-const labelClass = "text-xs font-medium text-slate-500 mb-1.5 block";
+const labelClass = "text-xs font-medium text-black mb-1.5 block";
 
 function Field({
   label,
@@ -32,7 +32,7 @@ function Field({
     <div>
       <label className={labelClass}>{label}</label>
       <div className="relative">
-        <Icon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+        <Icon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-black" />
         {children}
       </div>
     </div>
@@ -142,16 +142,16 @@ export default function OfferForm({ offerId }: OfferFormProps) {
   };
 
   if (loading) {
-    return <p className="text-sm text-slate-400">Loading offer…</p>;
+    return <p className="text-sm text-black">Loading offer…</p>;
   }
 
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-xl font-semibold text-slate-900">
+        <h1 className="text-xl font-semibold text-black">
           {isEdit ? "Edit offer" : "Create offer"}
         </h1>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-black">
           {isEdit ? "Update this offer." : "Set up a new offer to run on the platform."}
         </p>
       </div>
@@ -196,7 +196,7 @@ export default function OfferForm({ offerId }: OfferFormProps) {
                 className={`flex-1 h-11 rounded-xl text-sm font-semibold transition ${
                   form.status === "active"
                     ? "bg-green-600 text-white"
-                    : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                    : "bg-slate-100 text-black hover:bg-slate-200"
                 }`}
               >
                 Active
@@ -207,7 +207,7 @@ export default function OfferForm({ offerId }: OfferFormProps) {
                 className={`flex-1 h-11 rounded-xl text-sm font-semibold transition ${
                   form.status === "inactive"
                     ? "bg-slate-700 text-white"
-                    : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                    : "bg-slate-100 text-black hover:bg-slate-200"
                 }`}
               >
                 Inactive
@@ -310,7 +310,7 @@ export default function OfferForm({ offerId }: OfferFormProps) {
           <button
             type="button"
             onClick={() => router.push("/dashboard/offers")}
-            className="h-11 px-6 rounded-xl border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 transition"
+            className="h-11 px-6 rounded-xl border border-slate-200 text-sm font-medium text-black hover:bg-slate-50 transition"
           >
             Cancel
           </button>

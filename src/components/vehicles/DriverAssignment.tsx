@@ -52,14 +52,14 @@ export default function DriverAssignment({ vehicleId }: Props) {
 
   return (
     <div className="max-w-3xl border border-slate-100 rounded-2xl p-5 mt-6">
-      <h2 className="text-sm font-semibold text-slate-800 mb-1">Driver assignment</h2>
-      <p className="text-xs text-slate-500 mb-4">
+      <h2 className="text-sm font-semibold text-black mb-1">Driver assignment</h2>
+      <p className="text-xs text-black mb-4">
         Pair this vehicle with a driver on the fleet — a standing assignment, separate from any
         specific trip.
       </p>
 
       {loading || driversLoading ? (
-        <p className="text-sm text-slate-400">Loading…</p>
+        <p className="text-sm text-black">Loading…</p>
       ) : (
         <div className="flex items-center gap-3 flex-wrap">
           <select
@@ -81,16 +81,16 @@ export default function DriverAssignment({ vehicleId }: Props) {
               type="button"
               onClick={() => handleAssign("")}
               disabled={saving}
-              className="h-11 px-4 rounded-xl border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-60 transition"
+              className="h-11 px-4 rounded-xl border border-slate-200 text-sm font-medium text-black hover:bg-slate-50 disabled:opacity-60 transition"
             >
               Unassign
             </button>
           )}
 
           {assignedDriver && (
-            <span className="text-sm text-slate-600">
+            <span className="text-sm text-black">
               Currently assigned:{" "}
-              <span className="font-medium text-slate-900">
+              <span className="font-medium text-black">
                 {assignedDriver.fullName as string}
               </span>
             </span>

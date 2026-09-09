@@ -19,12 +19,12 @@ export const driverStatusStyle: Record<string, string> = {
   available: "bg-green-50 text-green-600",
   assigned: "bg-blue-50 text-blue-600",
   "on-trip": "bg-blue-50 text-blue-600",
-  offline: "bg-slate-100 text-slate-500",
+  offline: "bg-slate-100 text-black",
 };
 
 export const centralStatusStyle: Record<string, string> = {
   active: "bg-green-50 text-green-600",
-  inactive: "bg-slate-100 text-slate-500",
+  inactive: "bg-slate-100 text-black",
   suspended: "bg-amber-50 text-amber-600",
   blocked: "bg-red-50 text-red-600",
 };
@@ -80,19 +80,19 @@ export default function DriverStatusControl({ driverId }: Props) {
   };
 
   if (loading) {
-    return <p className="text-sm text-slate-400">Loading status…</p>;
+    return <p className="text-sm text-black">Loading status…</p>;
   }
 
   return (
     <div className="border border-slate-100 rounded-2xl p-5">
-      <h2 className="text-sm font-semibold text-slate-800 mb-1">Status</h2>
-      <p className="text-xs text-slate-500 mb-4">
+      <h2 className="text-sm font-semibold text-black mb-1">Status</h2>
+      <p className="text-xs text-black mb-4">
         Driver status affects trip eligibility; account status controls whether they can log
         in at all.
       </p>
       <div className="flex flex-wrap items-center gap-6">
         <div>
-          <label className="text-xs font-medium text-slate-500 mb-1.5 block">Driver status</label>
+          <label className="text-xs font-medium text-black mb-1.5 block">Driver status</label>
           <StatusBadgeSelect
             value={driverStatus}
             options={DRIVER_STATUSES}
@@ -102,7 +102,7 @@ export default function DriverStatusControl({ driverId }: Props) {
           />
         </div>
         <div>
-          <label className="text-xs font-medium text-slate-500 mb-1.5 block">Account status</label>
+          <label className="text-xs font-medium text-black mb-1.5 block">Account status</label>
           <StatusBadgeSelect
             value={centralStatus}
             options={CENTRAL_STATUSES}
