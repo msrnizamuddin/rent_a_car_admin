@@ -19,7 +19,7 @@ type Props = {
 };
 
 const toolbarButtonClass =
-  "w-7 h-7 rounded flex items-center justify-center text-slate-600 hover:bg-slate-100 transition";
+  "w-7 h-7 rounded flex items-center justify-center text-black hover:bg-slate-100 transition";
 
 export default function RichTextEditor({ value, onChange }: Props) {
   const { token } = useAuth();
@@ -98,7 +98,7 @@ export default function RichTextEditor({ value, onChange }: Props) {
         ref={editorRef}
         contentEditable
         onInput={() => onChange(editorRef.current?.innerHTML || "")}
-        className="min-h-[140px] px-3.5 py-3 text-sm text-slate-900 outline-none [&_ul]:list-disc [&_ul]:pl-5 [&_img]:max-w-full [&_img]:rounded-lg [&_img]:my-2"
+        className="min-h-[140px] px-3.5 py-3 text-sm text-black outline-none [&_ul]:list-disc [&_ul]:pl-5 [&_img]:max-w-full [&_img]:rounded-lg [&_img]:my-2"
         suppressContentEditableWarning
       />
     </div>

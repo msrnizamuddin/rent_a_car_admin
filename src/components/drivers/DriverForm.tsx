@@ -12,7 +12,7 @@ import DriverStatusControl from "@/components/drivers/DriverStatusControl";
 import type { UploadedDocument } from "@/services/documentService";
 
 const inputClass =
-  "w-full h-12 pl-11 pr-4 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition";
+  "w-full h-12 pl-11 pr-4 rounded-xl bg-slate-50 border border-slate-200 text-sm text-black placeholder:text-black outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition";
 
 function Field({
   label,
@@ -25,9 +25,9 @@ function Field({
 }) {
   return (
     <div>
-      <label className="text-xs font-medium text-slate-500 mb-1.5 block">{label}</label>
+      <label className="text-xs font-medium text-black mb-1.5 block">{label}</label>
       <div className="relative">
-        <Icon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+        <Icon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-black" />
         {children}
       </div>
     </div>
@@ -201,16 +201,16 @@ export default function DriverForm({ driverId }: DriverFormProps) {
   };
 
   if (loading) {
-    return <p className="text-sm text-slate-400">Loading driver…</p>;
+    return <p className="text-sm text-black">Loading driver…</p>;
   }
 
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-xl font-semibold text-slate-900">
+        <h1 className="text-xl font-semibold text-black">
           {isEdit ? "Edit driver" : "Add driver"}
         </h1>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-black">
           {isEdit
             ? "Update this driver's profile details."
             : "Enter driver details to add them to the fleet."}
@@ -275,8 +275,8 @@ export default function DriverForm({ driverId }: DriverFormProps) {
           </Field>
 
           <div>
-            <label className="text-xs font-medium text-slate-500 mb-1.5 block">ID type</label>
-            <select value={form.idType} onChange={update("idType")} className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition">
+            <label className="text-xs font-medium text-black mb-1.5 block">ID type</label>
+            <select value={form.idType} onChange={update("idType")} className="w-full h-12 px-4 rounded-xl bg-slate-50 border border-slate-200 text-sm text-black outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition">
               <option value="nid">NID</option>
               <option value="passport">Passport</option>
             </select>
@@ -321,7 +321,7 @@ export default function DriverForm({ driverId }: DriverFormProps) {
         </div>
 
         <div>
-          <h2 className="text-sm font-semibold text-slate-800 mb-3">Documents</h2>
+          <h2 className="text-sm font-semibold text-black mb-3">Documents</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <DocumentUpload
               label={form.idType === "passport" ? "Passport document" : "NID document"}
@@ -357,7 +357,7 @@ export default function DriverForm({ driverId }: DriverFormProps) {
           <button
             type="button"
             onClick={() => router.push("/dashboard/drivers")}
-            className="h-11 px-6 rounded-xl border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 transition"
+            className="h-11 px-6 rounded-xl border border-slate-200 text-sm font-medium text-black hover:bg-slate-50 transition"
           >
             Cancel
           </button>

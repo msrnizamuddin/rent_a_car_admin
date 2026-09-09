@@ -4,8 +4,8 @@ import { useState, type FormEvent } from "react";
 import { useProfile } from "@/hooks/useProfile";
 
 const inputClass =
-  "w-full h-11 px-3.5 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition";
-const labelClass = "text-xs font-medium text-slate-500 mb-1.5 block";
+  "w-full h-11 px-3.5 rounded-xl bg-slate-50 border border-slate-200 text-sm text-black outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition";
+const labelClass = "text-xs font-medium text-black mb-1.5 block";
 
 export default function SettingsPanel() {
   const { user, saving, error, success, updateProfile, changePassword } = useProfile();
@@ -32,8 +32,8 @@ export default function SettingsPanel() {
   return (
     <div className="max-w-2xl">
       <div className="mb-6">
-        <h1 className="text-xl font-semibold text-slate-900">Settings</h1>
-        <p className="text-sm text-slate-500">
+        <h1 className="text-xl font-semibold text-black">Settings</h1>
+        <p className="text-sm text-black">
           Manage your profile and account security.
         </p>
       </div>
@@ -45,7 +45,7 @@ export default function SettingsPanel() {
       )}
 
       <form onSubmit={handleProfileSubmit} className="rounded-2xl border border-slate-100 p-5 mb-6">
-        <h2 className="text-sm font-semibold text-slate-800 mb-4">Profile</h2>
+        <h2 className="text-sm font-semibold text-black mb-4">Profile</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>
             <label className={labelClass}>Full name</label>
@@ -83,7 +83,7 @@ export default function SettingsPanel() {
       </form>
 
       <form onSubmit={handlePasswordSubmit} className="rounded-2xl border border-slate-100 p-5">
-        <h2 className="text-sm font-semibold text-slate-800 mb-4">Change password</h2>
+        <h2 className="text-sm font-semibold text-black mb-4">Change password</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>
             <label className={labelClass}>Current password</label>

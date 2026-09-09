@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Plus, Search, Pencil } from "lucide-react";
 import { useVehicles } from "@/hooks/useVehicles";
 import { useVehicleCategories } from "@/hooks/useVehicleCategories";
@@ -14,11 +15,12 @@ const statusStyle: Record<string, string> = {
   approved: "bg-green-50 text-green-600",
   rejected: "bg-red-50 text-red-600",
   maintenance: "bg-amber-50 text-amber-600",
-  inactive: "bg-slate-100 text-slate-500",
+  inactive: "bg-slate-100 text-black",
 };
 
 export default function VehicleList() {
-  const [search, setSearch] = useState("");
+  const searchParams = useSearchParams();
+  const [search, setSearch] = useState(() => searchParams.get("q") || "");
   const [categoryId, setCategoryId] = useState("");
   const { categories } = useVehicleCategories();
   const { vehicles, pagination, loading, error } = useVehicles({
@@ -29,30 +31,30 @@ export default function VehicleList() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6 gap-4 flex-wrap">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-xl font-semibold text-slate-900">Vehicles</h1>
-          <p className="text-sm text-slate-500">
+          <h1 className="text-xl font-semibold text-black">Vehicles</h1>
+          <p className="text-sm text-black">
             {pagination?.total ?? vehicles.length} total vehicles
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="relative flex-1 min-w-[160px] sm:flex-none sm:w-56">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-black" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search vehicles"
-              className="h-11 w-56 pl-10 pr-4 rounded-xl bg-slate-50 border border-slate-200 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition"
+              className="h-11 w-full pl-10 pr-4 rounded-xl bg-slate-50 border border-slate-200 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition"
             />
           </div>
 
           <select
             value={categoryId}
             onChange={(e) => setCategoryId(e.target.value)}
-            className="h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-sm outline-none focus:border-blue-500"
+            className="h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-sm outline-none focus:border-blue-500 shrink-0"
           >
             <option value="">All categories</option>
             {categories.map((c) => (
@@ -73,16 +75,16 @@ export default function VehicleList() {
       </div>
 
       {loading ? (
-        <p className="text-sm text-slate-400">Loading vehicles…</p>
+        <p className="text-sm text-black">Loading vehicles…</p>
       ) : error ? (
         <p className="text-sm text-red-500">Couldn&apos;t load vehicles.</p>
       ) : vehicles.length === 0 ? (
-        <p className="text-sm text-slate-400">No vehicles found.</p>
+        <p className="text-sm text-black">No vehicles found.</p>
       ) : (
         <div className="overflow-x-auto rounded-2xl border border-slate-100">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-slate-50 text-left text-xs font-semibold text-slate-500">
+              <tr className="bg-slate-50 text-left text-xs font-semibold text-black">
                 <th className="py-3 px-4">Vehicle</th>
                 <th className="py-3 px-4">Registration</th>
                 <th className="py-3 px-4">Type</th>
@@ -106,17 +108,17 @@ export default function VehicleList() {
                         />
                       )}
                       <div>
-                        <p className="font-medium text-slate-900">
+                        <p className="font-medium text-black">
                           {v.brand} {v.vehicleName}
                         </p>
-                        <p className="text-xs text-slate-400">{v.vehicleModel}</p>
+                        <p className="text-xs text-black">{v.vehicleModel}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="py-3 px-4 text-slate-600">{v.registrationNumber}</td>
-                  <td className="py-3 px-4 capitalize text-slate-600">{v.vehicleType}</td>
-                  <td className="py-3 px-4 text-slate-600">{v.location?.city || "—"}</td>
-                  <td className="py-3 px-4 text-slate-600">
+                  <td className="py-3 px-4 text-black">{v.registrationNumber}</td>
+                  <td className="py-3 px-4 capitalize text-black">{v.vehicleType}</td>
+                  <td className="py-3 px-4 text-black">{v.location?.city || "—"}</td>
+                  <td className="py-3 px-4 text-black">
                     {v.estimatedRentalRate?.perDay
                       ? `৳${v.estimatedRentalRate.perDay}`
                       : "—"}
@@ -124,7 +126,7 @@ export default function VehicleList() {
                   <td className="py-3 px-4">
                     <span
                       className={`px-2.5 py-1 rounded-full text-xs font-medium capitalize ${
-                        statusStyle[v.availabilityStatus] || "bg-slate-100 text-slate-500"
+                        statusStyle[v.availabilityStatus] || "bg-slate-100 text-black"
                       }`}
                     >
                       {v.availabilityStatus}

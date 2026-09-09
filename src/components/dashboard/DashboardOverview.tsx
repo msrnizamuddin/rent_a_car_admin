@@ -39,8 +39,8 @@ function StatCard({
       <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 ${toneClass}`}>
         <Icon className="w-5 h-5" />
       </div>
-      <p className="text-2xl font-semibold text-slate-900">{value}</p>
-      <p className="text-sm text-slate-500 mt-0.5">{label}</p>
+      <p className="text-2xl font-semibold text-black">{value}</p>
+      <p className="text-sm text-black mt-0.5">{label}</p>
     </div>
   );
 }
@@ -49,7 +49,7 @@ export default function DashboardOverview() {
   const { stats, loading, error } = useDashboardStats();
 
   if (loading) {
-    return <p className="text-sm text-slate-400">Loading dashboard…</p>;
+    return <p className="text-sm text-black">Loading dashboard…</p>;
   }
 
   if (error || !stats) {
@@ -63,8 +63,8 @@ export default function DashboardOverview() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-xl font-semibold text-slate-900">Overview</h1>
-        <p className="text-sm text-slate-500">
+        <h1 className="text-xl font-semibold text-black">Overview</h1>
+        <p className="text-sm text-black">
           A live snapshot of the fleet, bookings and revenue.
         </p>
       </div>
@@ -118,7 +118,7 @@ export default function DashboardOverview() {
       {/* Recent rental requests */}
       <div>
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-base font-semibold text-slate-900">
+          <h2 className="text-base font-semibold text-black">
             Recent rental requests
           </h2>
           <Link
@@ -130,12 +130,12 @@ export default function DashboardOverview() {
         </div>
 
         {stats.recentRequests.length === 0 ? (
-          <p className="text-sm text-slate-400">No rental requests yet.</p>
+          <p className="text-sm text-black">No rental requests yet.</p>
         ) : (
           <div className="overflow-hidden rounded-2xl border border-slate-100">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-slate-50 text-left text-xs font-semibold text-slate-500">
+                <tr className="bg-slate-50 text-left text-xs font-semibold text-black">
                   <th className="py-3 px-4">Request</th>
                   <th className="py-3 px-4">Trip type</th>
                   <th className="py-3 px-4">Status</th>
@@ -154,20 +154,20 @@ export default function DashboardOverview() {
                         {r.id.slice(0, 8)}
                       </Link>
                     </td>
-                    <td className="py-3 px-4 capitalize text-slate-600">{r.tripType}</td>
-                    <td className="py-3 px-4 text-slate-600">
+                    <td className="py-3 px-4 capitalize text-black">{r.tripType}</td>
+                    <td className="py-3 px-4 text-black">
                       <span
                         className={`px-2.5 py-1 rounded-full text-xs font-medium capitalize ${
-                          rentalRequestStatusStyle[r.status] || "bg-slate-100 text-slate-500"
+                          rentalRequestStatusStyle[r.status] || "bg-slate-100 text-black"
                         }`}
                       >
                         {r.status.replace(/_/g, " ")}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-slate-600">
+                    <td className="py-3 px-4 text-black">
                       {r.estimatedRent?.total ? `৳${r.estimatedRent.total}` : "—"}
                     </td>
-                    <td className="py-3 px-4 text-slate-500">
+                    <td className="py-3 px-4 text-black">
                       {new Date(r.createdAt).toLocaleDateString()}
                     </td>
                   </tr>

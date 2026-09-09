@@ -57,7 +57,7 @@ export default function DocumentUpload({
 
   return (
     <div>
-      <label className="text-xs font-medium text-slate-500 mb-1.5 block">{label}</label>
+      <label className="text-xs font-medium text-black mb-1.5 block">{label}</label>
 
       {value ? (
         <div className="flex items-center gap-3 h-11 px-3.5 rounded-xl bg-green-50 border border-green-200 text-sm text-green-700">
@@ -85,8 +85,8 @@ export default function DocumentUpload({
         <label
           className={`flex items-center gap-3 h-11 px-3.5 rounded-xl bg-slate-50 border border-dashed text-sm transition ${
             uploading
-              ? "border-slate-200 text-slate-400"
-              : "border-slate-300 text-slate-500 cursor-pointer hover:border-blue-400"
+              ? "border-slate-200 text-black"
+              : "border-slate-300 text-black cursor-pointer hover:border-blue-400"
           }`}
         >
           {uploading ? (

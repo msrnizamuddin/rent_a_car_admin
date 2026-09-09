@@ -12,9 +12,9 @@ import { formatApiError } from "@/lib/errorMessages";
 import ImageUpload from "@/components/shared/ImageUpload";
 
 const inputClass =
-  "w-full h-11 px-3.5 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition";
+  "w-full h-11 px-3.5 rounded-xl bg-slate-50 border border-slate-200 text-sm text-black placeholder:text-black outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition";
 
-const labelClass = "text-xs font-medium text-slate-500 mb-1.5 block";
+const labelClass = "text-xs font-medium text-black mb-1.5 block";
 
 type VehicleCategoryFormProps = {
   // Present in edit mode — PATCHes the existing category instead of creating one.
@@ -78,16 +78,16 @@ export default function VehicleCategoryForm({ categoryId }: VehicleCategoryFormP
   };
 
   if (loading) {
-    return <p className="text-sm text-slate-400">Loading category…</p>;
+    return <p className="text-sm text-black">Loading category…</p>;
   }
 
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-xl font-semibold text-slate-900">
+        <h1 className="text-xl font-semibold text-black">
           {isEdit ? "Edit category" : "Add category"}
         </h1>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-black">
           {isEdit
             ? "Update this vehicle category."
             : "Create a new category to group vehicles under."}
@@ -125,7 +125,7 @@ export default function VehicleCategoryForm({ categoryId }: VehicleCategoryFormP
               className={`flex-1 h-11 rounded-xl text-sm font-semibold transition ${
                 status === "active"
                   ? "bg-green-600 text-white"
-                  : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                  : "bg-slate-100 text-black hover:bg-slate-200"
               }`}
             >
               Active
@@ -136,7 +136,7 @@ export default function VehicleCategoryForm({ categoryId }: VehicleCategoryFormP
               className={`flex-1 h-11 rounded-xl text-sm font-semibold transition ${
                 status === "inactive"
                   ? "bg-slate-700 text-white"
-                  : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                  : "bg-slate-100 text-black hover:bg-slate-200"
               }`}
             >
               Inactive
@@ -168,7 +168,7 @@ export default function VehicleCategoryForm({ categoryId }: VehicleCategoryFormP
           <button
             type="button"
             onClick={() => router.push("/dashboard/vehicle-categories")}
-            className="h-11 px-6 rounded-xl border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 transition"
+            className="h-11 px-6 rounded-xl border border-slate-200 text-sm font-medium text-black hover:bg-slate-50 transition"
           >
             Cancel
           </button>

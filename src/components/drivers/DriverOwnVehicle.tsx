@@ -21,9 +21,9 @@ import type { UploadedDocument } from "@/services/documentService";
 import { VEHICLE_TYPES, FUEL_TYPES, TRANSMISSIONS } from "@/constants/vehicle.constants";
 
 const inputClass =
-  "w-full h-11 px-3.5 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition";
+  "w-full h-11 px-3.5 rounded-xl bg-slate-50 border border-slate-200 text-sm text-black placeholder:text-black outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition";
 
-const labelClass = "text-xs font-medium text-slate-500 mb-1.5 block";
+const labelClass = "text-xs font-medium text-black mb-1.5 block";
 
 const REQUIRED_VEHICLE_PHOTOS = 5;
 const REQUIRED_VEHICLE_DOCS = REQUIRED_VEHICLE_PHOTOS + 3;
@@ -151,13 +151,13 @@ export default function DriverOwnVehicle({ driverId }: Props) {
   };
 
   if (loading) {
-    return <p className="text-sm text-slate-400">Checking for an owned vehicle…</p>;
+    return <p className="text-sm text-black">Checking for an owned vehicle…</p>;
   }
 
   return (
     <div className="border border-slate-100 rounded-2xl p-5">
-      <h2 className="text-sm font-semibold text-slate-800 mb-1">Driver&apos;s own vehicle</h2>
-      <p className="text-xs text-slate-500 mb-4">
+      <h2 className="text-sm font-semibold text-black mb-1">Driver&apos;s own vehicle</h2>
+      <p className="text-xs text-black mb-4">
         If this driver brought their own car — rather than driving a fleet vehicle assigned to
         them — register it here.
       </p>
@@ -166,7 +166,7 @@ export default function DriverOwnVehicle({ driverId }: Props) {
         <button
           type="button"
           onClick={() => setShowForm(true)}
-          className="h-10 px-4 rounded-xl border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 transition"
+          className="h-10 px-4 rounded-xl border border-slate-200 text-sm font-medium text-black hover:bg-slate-50 transition"
         >
           + Add driver&apos;s own vehicle
         </button>
@@ -298,7 +298,7 @@ export default function DriverOwnVehicle({ driverId }: Props) {
                     className={`h-9 px-3.5 rounded-lg border text-sm font-medium capitalize transition ${
                       checked
                         ? "bg-blue-600 border-blue-600 text-white"
-                        : "bg-slate-50 border-slate-200 text-slate-600 hover:border-blue-400"
+                        : "bg-slate-50 border-slate-200 text-black hover:border-blue-400"
                     }`}
                   >
                     {f}
@@ -336,7 +336,7 @@ export default function DriverOwnVehicle({ driverId }: Props) {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-slate-800 mb-3">
+            <h3 className="text-sm font-semibold text-black mb-3">
               Vehicle photos (number plate visible)
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -360,7 +360,7 @@ export default function DriverOwnVehicle({ driverId }: Props) {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-slate-800 mb-3">Paperwork</h3>
+            <h3 className="text-sm font-semibold text-black mb-3">Paperwork</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <DocumentUpload
                 label="Registration copy"

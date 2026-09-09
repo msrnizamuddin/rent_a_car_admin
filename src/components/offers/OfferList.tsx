@@ -12,7 +12,7 @@ import { OFFER_STATUSES, OFFER_TRIP_TYPE_LABELS } from "@/constants/offer.consta
 
 const statusStyle: Record<string, string> = {
   active: "bg-green-50 text-green-600",
-  inactive: "bg-slate-100 text-slate-500",
+  inactive: "bg-slate-100 text-black",
 };
 
 export default function OfferList() {
@@ -57,8 +57,8 @@ export default function OfferList() {
     <div>
       <div className="flex items-center justify-between mb-6 gap-4 flex-wrap">
         <div>
-          <h1 className="text-xl font-semibold text-slate-900">Offers</h1>
-          <p className="text-sm text-slate-500">{offers.length} total offers</p>
+          <h1 className="text-xl font-semibold text-black">Offers</h1>
+          <p className="text-sm text-black">{offers.length} total offers</p>
         </div>
 
         <Link
@@ -73,16 +73,16 @@ export default function OfferList() {
       {actionError && <p className="mb-4 text-sm font-medium text-red-500">{actionError}</p>}
 
       {loading ? (
-        <p className="text-sm text-slate-400">Loading offers…</p>
+        <p className="text-sm text-black">Loading offers…</p>
       ) : error ? (
         <p className="text-sm text-red-500">Couldn&apos;t load offers.</p>
       ) : offers.length === 0 ? (
-        <p className="text-sm text-slate-400">No offers yet.</p>
+        <p className="text-sm text-black">No offers yet.</p>
       ) : (
         <div className="overflow-x-auto rounded-2xl border border-slate-100">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-slate-50 text-left text-xs font-semibold text-slate-500">
+              <tr className="bg-slate-50 text-left text-xs font-semibold text-black">
                 <th className="py-3 px-4">Offer</th>
                 <th className="py-3 px-4">Trip type</th>
                 <th className="py-3 px-4">Route</th>
@@ -106,24 +106,24 @@ export default function OfferList() {
                         />
                       )}
                       <div>
-                        <p className="font-medium text-slate-900">{o.title}</p>
-                        {o.subtitle && <p className="text-xs text-slate-400">{o.subtitle}</p>}
+                        <p className="font-medium text-black">{o.title}</p>
+                        {o.subtitle && <p className="text-xs text-black">{o.subtitle}</p>}
                       </div>
                     </div>
                   </td>
-                  <td className="py-3 px-4 text-slate-600">
+                  <td className="py-3 px-4 text-black">
                     {o.tripType ? OFFER_TRIP_TYPE_LABELS[o.tripType] || o.tripType : "—"}
                   </td>
-                  <td className="py-3 px-4 text-slate-600">
+                  <td className="py-3 px-4 text-black">
                     {o.fromLocation || o.toLocation
                       ? `${o.fromLocation || "—"} → ${o.toLocation || "—"}`
                       : "—"}
                   </td>
-                  <td className="py-3 px-4 text-slate-600">
+                  <td className="py-3 px-4 text-black">
                     {Number(o.discountValue)}
                     {o.discountType === "percentage" ? "%" : "৳"}
                   </td>
-                  <td className="py-3 px-4 text-slate-600">
+                  <td className="py-3 px-4 text-black">
                     {o.startDate ? o.startDate.slice(0, 10) : "—"} –{" "}
                     {o.endDate ? o.endDate.slice(0, 10) : "—"}
                   </td>

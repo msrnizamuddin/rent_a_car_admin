@@ -12,7 +12,7 @@ import { TOURIST_SPOT_STATUSES } from "@/constants/touristSpot.constants";
 
 const statusStyle: Record<string, string> = {
   active: "bg-green-50 text-green-600",
-  inactive: "bg-slate-100 text-slate-500",
+  inactive: "bg-slate-100 text-black",
 };
 
 export default function TouristSpotList() {
@@ -57,8 +57,8 @@ export default function TouristSpotList() {
     <div>
       <div className="flex items-center justify-between mb-6 gap-4 flex-wrap">
         <div>
-          <h1 className="text-xl font-semibold text-slate-900">Tourist Spots</h1>
-          <p className="text-sm text-slate-500">{touristSpots.length} total spots</p>
+          <h1 className="text-xl font-semibold text-black">Tourist Spots</h1>
+          <p className="text-sm text-black">{touristSpots.length} total spots</p>
         </div>
 
         <Link
@@ -73,16 +73,16 @@ export default function TouristSpotList() {
       {actionError && <p className="mb-4 text-sm font-medium text-red-500">{actionError}</p>}
 
       {loading ? (
-        <p className="text-sm text-slate-400">Loading tourist spots…</p>
+        <p className="text-sm text-black">Loading tourist spots…</p>
       ) : error ? (
         <p className="text-sm text-red-500">Couldn&apos;t load tourist spots.</p>
       ) : touristSpots.length === 0 ? (
-        <p className="text-sm text-slate-400">No tourist spots yet.</p>
+        <p className="text-sm text-black">No tourist spots yet.</p>
       ) : (
         <div className="overflow-x-auto rounded-2xl border border-slate-100">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-slate-50 text-left text-xs font-semibold text-slate-500">
+              <tr className="bg-slate-50 text-left text-xs font-semibold text-black">
                 <th className="py-3 px-4">Spot</th>
                 <th className="py-3 px-4">Location</th>
                 <th className="py-3 px-4">Status</th>
@@ -103,20 +103,20 @@ export default function TouristSpotList() {
                         />
                       ) : (
                         <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
-                          <MapPin className="w-4 h-4 text-slate-300" />
+                          <MapPin className="w-4 h-4 text-black" />
                         </div>
                       )}
                       <div>
-                        <p className="font-medium text-slate-900">{s.name}</p>
+                        <p className="font-medium text-black">{s.name}</p>
                         {s.description && (
-                          <p className="text-xs text-slate-400 line-clamp-1 max-w-xs">
+                          <p className="text-xs text-black line-clamp-1 max-w-xs">
                             {s.description}
                           </p>
                         )}
                       </div>
                     </div>
                   </td>
-                  <td className="py-3 px-4 text-slate-600">{s.location || "—"}</td>
+                  <td className="py-3 px-4 text-black">{s.location || "—"}</td>
                   <td className="py-3 px-4">
                     <StatusBadgeSelect
                       value={s.status}
