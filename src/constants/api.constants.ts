@@ -144,6 +144,7 @@ export const ENDPOINTS = {
   document: {
     all: document("/all"),
     byId: (id: string) => document(`/${id}`),
+    byOwner: (ownerType: string, ownerId: string) => document(`/owner/${ownerType}/${ownerId}`),
     upload: document("/upload"),
   },
 

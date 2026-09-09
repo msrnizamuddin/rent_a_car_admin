@@ -9,7 +9,11 @@ import { useUsers } from "@/hooks/useUsers";
 import { createVehicle, getVehicleById, updateVehicle } from "@/services/vehicleService";
 import { formatApiError } from "@/lib/errorMessages";
 import DocumentUpload from "@/components/shared/DocumentUpload";
-import type { UploadedDocument } from "@/services/documentService";
+import {
+  deleteDocument,
+  getDocumentsByOwner,
+  type UploadedDocument,
+} from "@/services/documentService";
 import {
   VEHICLE_TYPES,
   FUEL_TYPES,
@@ -112,8 +116,15 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
     if (!vehicleId || !token) return;
 
     setLoading(true);
-    getVehicleById(vehicleId, token)
-      .then((vehicle) => {
+    Promise.all([
+      getVehicleById(vehicleId, token),
+      // Previously uploaded documents (each DocumentUpload persists to the
+      // backend immediately on selection, independent of this form's Save
+      // button) — without this, re-opening Edit always showed every slot
+      // as empty, which looked like documents were never saved at all.
+      getDocumentsByOwner("vehicle", vehicleId, token).catch(() => []),
+    ])
+      .then(([vehicle, documents]) => {
         setForm({
           vehicleName: vehicle.vehicleName || "",
           brand: vehicle.brand || "",
@@ -128,6 +139,16 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
           ownerDriverId: vehicle.ownerDriverId || "",
         });
         setFuelTypes(vehicle.fuelType?.length ? vehicle.fuelType : [FUEL_TYPES[0] as string]);
+
+        const photos = documents.filter((d) => d.category === "vehicle_photo");
+        setVehiclePhotos((prev) =>
+          prev.map((_, i) => photos[i] || null),
+        );
+        setRegistrationCopy(documents.find((d) => d.category === "registration_copy") || null);
+        setTaxToken(documents.find((d) => d.category === "tax_token") || null);
+        setFitnessCertificate(
+          documents.find((d) => d.category === "fitness_certificate") || null,
+        );
       })
       .catch((err) => setError(formatApiError(err, "Could not load vehicle.")))
       .finally(() => setLoading(false));
@@ -142,6 +163,19 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
     setFuelTypes((prev) =>
       prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type],
     );
+
+  // Actually deletes the document on the backend before clearing it from
+  // the slot — previously this only cleared local state, leaving the
+  // "removed" document still attached to the vehicle server-side.
+  const removeDocument = async (doc: UploadedDocument | null, clearLocal: () => void) => {
+    if (!doc || !token) return;
+    try {
+      await deleteDocument(doc.id, token);
+      clearLocal();
+    } catch (err) {
+      setError(formatApiError(err, "Could not remove document, please try again."));
+    }
+  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -373,39 +407,19 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
           </select>
         </CollapsibleSection>
 
-        {error && <p className="text-sm font-medium text-red-500">{error}</p>}
-
-        <div className="flex items-center gap-3 pt-2">
-          <button
-            type="submit"
-            disabled={submitting}
-            className="h-11 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-sm font-semibold transition"
-          >
-            {submitting ? "Saving..." : savedVehicleId ? "Save changes" : "Create vehicle"}
-          </button>
-          <button
-            type="button"
-            onClick={() => router.push("/dashboard/vehicles")}
-            className="h-11 px-6 rounded-xl border border-slate-200 text-sm font-medium text-black hover:bg-slate-50 transition"
-          >
-            Cancel
-          </button>
-        </div>
-      </form>
-
-      <div className="max-w-3xl mt-6 border border-slate-100 rounded-2xl p-5">
-        <h2 className="text-sm font-semibold text-black mb-1">Vehicle documents</h2>
-        <p className="text-xs text-black mb-4">
-          {REQUIRED_VEHICLE_PHOTOS} photos with the number plate visible, plus registration
-          copy, tax token, and fitness certificate — {REQUIRED_VEHICLE_DOCS} total to mark this
-          vehicle fully documented.
-        </p>
-
-        {!savedVehicleId ? (
-          <p className="text-sm text-black">
-            Save the vehicle details above first — uploads need a saved vehicle to attach to.
+        <div className="border border-slate-100 rounded-2xl p-5">
+          <h2 className="text-sm font-semibold text-black mb-1">Vehicle documents</h2>
+          <p className="text-xs text-black mb-4">
+            {REQUIRED_VEHICLE_PHOTOS} photos with the number plate visible, plus registration
+            copy, tax token, and fitness certificate — {REQUIRED_VEHICLE_DOCS} total to mark
+            this vehicle fully documented.
           </p>
-        ) : (
+
+          {!savedVehicleId ? (
+            <p className="text-sm text-black">
+              Save the vehicle details above first — uploads need a saved vehicle to attach to.
+            </p>
+          ) : (
           <div className="space-y-6">
             <div className="flex items-center gap-2 text-sm font-medium">
               {isFullyDocumented ? (
@@ -437,7 +451,9 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
                       setVehiclePhotos((prev) => prev.map((p, idx) => (idx === i ? doc : p)))
                     }
                     onRemove={() =>
-                      setVehiclePhotos((prev) => prev.map((p, idx) => (idx === i ? null : p)))
+                      removeDocument(photo, () =>
+                        setVehiclePhotos((prev) => prev.map((p, idx) => (idx === i ? null : p))),
+                      )
                     }
                   />
                 ))}
@@ -454,7 +470,7 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
                   ownerId={savedVehicleId}
                   value={registrationCopy}
                   onUploaded={setRegistrationCopy}
-                  onRemove={() => setRegistrationCopy(null)}
+                  onRemove={() => removeDocument(registrationCopy, () => setRegistrationCopy(null))}
                 />
                 <DocumentUpload
                   label="Tax token"
@@ -463,7 +479,7 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
                   ownerId={savedVehicleId}
                   value={taxToken}
                   onUploaded={setTaxToken}
-                  onRemove={() => setTaxToken(null)}
+                  onRemove={() => removeDocument(taxToken, () => setTaxToken(null))}
                 />
                 <DocumentUpload
                   label="Fitness certificate"
@@ -472,13 +488,35 @@ export default function VehicleForm({ vehicleId }: VehicleFormProps) {
                   ownerId={savedVehicleId}
                   value={fitnessCertificate}
                   onUploaded={setFitnessCertificate}
-                  onRemove={() => setFitnessCertificate(null)}
+                  onRemove={() =>
+                    removeDocument(fitnessCertificate, () => setFitnessCertificate(null))
+                  }
                 />
               </div>
             </div>
           </div>
         )}
-      </div>
+        </div>
+
+        {error && <p className="text-sm font-medium text-red-500">{error}</p>}
+
+        <div className="flex items-center gap-3 pt-2">
+          <button
+            type="submit"
+            disabled={submitting}
+            className="h-11 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-sm font-semibold transition"
+          >
+            {submitting ? "Saving..." : savedVehicleId ? "Save changes" : "Create vehicle"}
+          </button>
+          <button
+            type="button"
+            onClick={() => router.push("/dashboard/vehicles")}
+            className="h-11 px-6 rounded-xl border border-slate-200 text-sm font-medium text-black hover:bg-slate-50 transition"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
     </div>
   );
 }
