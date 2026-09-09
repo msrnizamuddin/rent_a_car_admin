@@ -55,11 +55,21 @@ export default function DriverStatusControl({ driverId }: Props) {
   const handleChange = async (field: "driverStatus" | "centralStatus", value: string) => {
     if (!token) return;
 
+    // The backend requires a written cause whenever centralStatus is set to
+    // "inactive" — it's shown back to the driver on their next blocked
+    // login attempt.
+    let reason: string | undefined;
+    if (field === "centralStatus" && value === "inactive") {
+      const entered = window.prompt("Why is this driver being deactivated?");
+      if (!entered || !entered.trim()) return;
+      reason = entered.trim();
+    }
+
     setError("");
     setSavingField(field);
 
     try {
-      await updateAccountControl(driverId, { [field]: value }, token);
+      await updateAccountControl(driverId, { [field]: value, ...(reason ? { reason } : {}) }, token);
       if (field === "driverStatus") setDriverStatus(value);
       else setCentralStatus(value);
     } catch (err) {
