@@ -59,7 +59,6 @@ export const menuConfig: MenuItem[] = [
     submenu: [
       { label: "All drivers", href: "/dashboard/drivers" },
       { label: "Add driver", href: "/dashboard/drivers/new" },
-      { label: "Applications", href: "/dashboard/drivers/applications" },
     ],
   },
   {
