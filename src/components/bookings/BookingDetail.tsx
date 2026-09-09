@@ -138,6 +138,14 @@ export default function BookingDetail({ id }: { id: string }) {
               </dd>
             </div>
             <div className="flex justify-between">
+              <dt className="text-black">Customer&apos;s offer</dt>
+              <dd className="text-black font-semibold">
+                {rentalRequest.offeredPrice
+                  ? `৳${Number(rentalRequest.offeredPrice).toLocaleString()}`
+                  : "—"}
+              </dd>
+            </div>
+            <div className="flex justify-between">
               <dt className="text-black">Final rent</dt>
               <dd className="text-black">
                 {rentalRequest.finalRent ? `৳${rentalRequest.finalRent}` : "—"}
@@ -218,6 +226,15 @@ export default function BookingDetail({ id }: { id: string }) {
               placeholder="Final rent (৳, optional)"
               className={inputClass}
             />
+            {rentalRequest.offeredPrice && (
+              <button
+                type="button"
+                onClick={() => setFinalRent(String(rentalRequest.offeredPrice))}
+                className="text-xs font-medium text-blue-600 hover:text-blue-700 transition"
+              >
+                Use customer&apos;s offer (৳{Number(rentalRequest.offeredPrice).toLocaleString()})
+              </button>
+            )}
             <button
               type="button"
               disabled={busy}
