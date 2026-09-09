@@ -88,6 +88,8 @@ export const menuConfig: MenuItem[] = [
     submenu: [
       { label: "Offers", href: "/dashboard/offers" },
       { label: "Add offer", href: "/dashboard/offers/new" },
+      { label: "Tourist Spots", href: "/dashboard/tourist-spots" },
+      { label: "Add tourist spot", href: "/dashboard/tourist-spots/new" },
     ],
   },
 ];
