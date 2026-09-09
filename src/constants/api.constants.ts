@@ -27,6 +27,7 @@ const ticket = (path = "") => `/ticket/web${path}`;
 const auditLog = (path = "") => `/audit-log/web${path}`;
 const document = (path = "") => `/document/web${path}`;
 const offer = (path = "") => `/offer/web${path}`;
+const touristSpot = (path = "") => `/tourist-spot/web${path}`;
 
 export const ENDPOINTS = {
   auth: {
@@ -150,5 +151,11 @@ export const ENDPOINTS = {
     list: offer("/"),
     all: offer("/all"),
     byId: (id: string) => offer(`/${id}`),
+  },
+
+  touristSpot: {
+    list: touristSpot("/"),
+    all: touristSpot("/all"),
+    byId: (id: string) => touristSpot(`/${id}`),
   },
 };
