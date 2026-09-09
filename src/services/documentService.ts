@@ -4,7 +4,7 @@
 // backend). Used for driver identification/license docs and vehicle
 // photos/paperwork — see DocumentUpload component.
 
-import { apiUpload } from "@/lib/http";
+import { apiDelete, apiGet, apiUpload } from "@/lib/http";
 import { ENDPOINTS } from "@/constants/api.constants";
 
 export type DocumentCategory =
@@ -45,4 +45,16 @@ export function uploadDocument(params: UploadDocumentParams, token: string) {
   if (params.expiryDate) formData.append("expiryDate", params.expiryDate);
 
   return apiUpload<UploadedDocument>(ENDPOINTS.document.upload, formData, { token });
+}
+
+export function getDocumentsByOwner(
+  ownerType: "user" | "vehicle",
+  ownerId: string,
+  token: string,
+) {
+  return apiGet<UploadedDocument[]>(ENDPOINTS.document.byOwner(ownerType, ownerId), { token });
+}
+
+export function deleteDocument(id: string, token: string) {
+  return apiDelete(ENDPOINTS.document.byId(id), { token });
 }
