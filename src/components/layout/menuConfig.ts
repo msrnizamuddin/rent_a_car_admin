@@ -73,16 +73,7 @@ export const menuConfig: MenuItem[] = [
     icon: CreditCard,
     href: "/dashboard/payments",
   },
-  {
-    key: "Website",
-    label: "Website",
-    icon: Globe,
-    href: "/dashboard/website",
-    submenu: [
-      { label: "Offers", href: "/dashboard/website/offers" },
-      { label: "Add offer", href: "/dashboard/website/offers/new" },
-    ],
-  },
+
   {
     key: "reports",
     label: "Reports",
