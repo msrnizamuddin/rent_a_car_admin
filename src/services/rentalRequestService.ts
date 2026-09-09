@@ -30,6 +30,8 @@ export type RentalRequest = {
   adminNotes?: string | null;
   callNotes?: string | null;
   estimatedRent?: { total?: number } | null;
+  // The price the customer proposed when submitting the request.
+  offeredPrice?: number | string | null;
   finalRent?: number | string | null;
   assignedVehicleId?: string | null;
   assignedDriverId?: string | null;

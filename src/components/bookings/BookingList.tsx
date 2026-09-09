@@ -74,6 +74,7 @@ export default function BookingList() {
                 <th className="py-3 px-4">Request</th>
                 <th className="py-3 px-4">Trip type</th>
                 <th className="py-3 px-4">Pickup</th>
+                <th className="py-3 px-4">Offered price</th>
                 <th className="py-3 px-4">Contact</th>
                 <th className="py-3 px-4">Status</th>
                 <th className="py-3 px-4">Created</th>
@@ -93,6 +94,9 @@ export default function BookingList() {
                   <td className="py-3 px-4 capitalize text-black">{r.tripType}</td>
                   <td className="py-3 px-4 text-black">
                     {r.pickupLocation?.city || "—"} · {r.pickupDate}
+                  </td>
+                  <td className="py-3 px-4 text-black">
+                    {r.offeredPrice ? `৳${Number(r.offeredPrice).toLocaleString()}` : "—"}
                   </td>
                   <td className="py-3 px-4 text-black">{r.contactNumber}</td>
                   <td className="py-3 px-4">
