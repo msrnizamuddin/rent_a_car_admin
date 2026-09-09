@@ -30,11 +30,21 @@ export default function DriverList() {
   ) => {
     if (!token) return;
 
+    // The backend requires a written cause whenever centralStatus is set to
+    // "inactive" — it's shown back to the driver on their next blocked
+    // login attempt.
+    let reason: string | undefined;
+    if (field === "centralStatus" && value === "inactive") {
+      const entered = window.prompt("Why is this driver being deactivated?");
+      if (!entered || !entered.trim()) return;
+      reason = entered.trim();
+    }
+
     setActionError("");
     setUpdatingId(driverId);
 
     try {
-      await updateAccountControl(driverId, { [field]: value }, token);
+      await updateAccountControl(driverId, { [field]: value, ...(reason ? { reason } : {}) }, token);
       await reload();
     } catch (err) {
       setActionError(formatApiError(err, "Could not update status."));

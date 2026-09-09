@@ -170,6 +170,26 @@ export default function DriverDetail({ id }: { id: string }) {
           </dl>
         </Card>
 
+        <Card title="Verification">
+          <dl className="space-y-2 text-sm">
+            <Row
+              label="Verified"
+              value={
+                <span className={driver.isVerified ? "text-green-600" : "text-amber-600"}>
+                  {driver.isVerified ? "Yes" : "No — needs approval"}
+                </span>
+              }
+            />
+            <Row
+              label="Profile submitted"
+              value={driver.profileSubmittedAt ? String(driver.profileSubmittedAt).slice(0, 10) : "Not yet"}
+            />
+            {(driver.centralStatus as string) === "inactive" && driver.inactiveReason ? (
+              <Row label="Deactivation reason" value={driver.inactiveReason as string} />
+            ) : null}
+          </dl>
+        </Card>
+
         <Card title="Own vehicle">
           {ownedVehicle ? (
             <dl className="space-y-2 text-sm">

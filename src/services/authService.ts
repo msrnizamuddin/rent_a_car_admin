@@ -102,6 +102,9 @@ export type AccountControlPayload = {
     | "on-trip"
     | "offline";
   permissions?: Record<string, unknown>;
+  // Required by the backend when centralStatus is "inactive" — the cause
+  // shown back to the driver on their next blocked login attempt.
+  reason?: string;
 };
 
 export function updateAccountControl(
