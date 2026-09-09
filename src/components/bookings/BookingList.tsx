@@ -50,7 +50,7 @@ export default function BookingList() {
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value as RentalRequestStatus | "")}
-          className="h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-sm outline-none focus:border-blue-500"
+          className="h-11 px-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-black outline-none focus:border-blue-500"
         >
           {STATUS_OPTIONS.map((o) => (
             <option key={o.value} value={o.value}>

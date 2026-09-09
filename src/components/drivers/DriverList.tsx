@@ -73,7 +73,7 @@ export default function DriverList() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search drivers"
-              className="h-11 w-full pl-10 pr-4 rounded-xl bg-slate-50 border border-slate-200 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition"
+              className="h-11 w-full pl-10 pr-4 rounded-xl bg-slate-50 border border-slate-200 text-sm text-black placeholder:text-black outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition"
             />
           </div>
           <Link

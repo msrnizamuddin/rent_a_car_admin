@@ -79,7 +79,7 @@ export default function FilterPanel({ onClose }: { onClose?: () => void }) {
           <input
             type="text"
             placeholder="Search"
-            className="w-full h-11 pl-10 pr-4 rounded-xl bg-slate-50 border border-slate-200 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition"
+            className="w-full h-11 pl-10 pr-4 rounded-xl bg-slate-50 border border-slate-200 text-sm text-black placeholder:text-black outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition"
           />
         </div>
 
