@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Search, Plus, Pencil } from "lucide-react";
+import { Search, Plus, Pencil, Eye } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useUsers } from "@/hooks/useUsers";
 import { updateAccountControl } from "@/services/authService";
@@ -130,14 +130,23 @@ export default function DriverList() {
                       onChange={(v) => handleStatusChange(d.id, "centralStatus", v)}
                     />
                   </td>
-                  <td className="py-3 px-4 text-right">
-                    <Link
-                      href={`/dashboard/drivers/${d.id}/edit`}
-                      className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 transition"
-                    >
-                      <Pencil className="w-3.5 h-3.5" />
-                      Edit
-                    </Link>
+                  <td className="py-3 px-4">
+                    <div className="flex items-center justify-end gap-3">
+                      <Link
+                        href={`/dashboard/drivers/${d.id}`}
+                        className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:text-slate-800 transition"
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                        View
+                      </Link>
+                      <Link
+                        href={`/dashboard/drivers/${d.id}/edit`}
+                        className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 transition"
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                        Edit
+                      </Link>
+                    </div>
                   </td>
                 </tr>
               ))}

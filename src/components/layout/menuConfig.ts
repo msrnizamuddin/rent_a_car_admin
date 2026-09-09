@@ -41,6 +41,8 @@ export const menuConfig: MenuItem[] = [
     submenu: [
       { label: "All vehicles", href: "/dashboard/vehicles" },
       { label: "Add vehicle", href: "/dashboard/vehicles/new" },
+      { label: "Categories", href: "/dashboard/vehicle-categories" },
+      { label: "Add category", href: "/dashboard/vehicle-categories/new" },
     ],
   },
   {
