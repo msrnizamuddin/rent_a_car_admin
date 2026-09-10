@@ -6,7 +6,7 @@
 // apps). This is the admin panel, so everything here uses the "/web" prefix.
 
 export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8001/api/v1";
+  process.env.NEXT_PUBLIC_API_URL || "https://api.ridebookbd.com/api/v1";
 
 const auth = (path = "") => `/auth/web${path}`;
 const vehicle = (path = "") => `/vehicle/web${path}`;
@@ -144,7 +144,8 @@ export const ENDPOINTS = {
   document: {
     all: document("/all"),
     byId: (id: string) => document(`/${id}`),
-    byOwner: (ownerType: string, ownerId: string) => document(`/owner/${ownerType}/${ownerId}`),
+    byOwner: (ownerType: string, ownerId: string) =>
+      document(`/owner/${ownerType}/${ownerId}`),
     upload: document("/upload"),
   },
 
