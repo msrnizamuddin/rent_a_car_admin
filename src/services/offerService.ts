@@ -60,7 +60,11 @@ export function createOffer(payload: OfferPayload, token: string) {
   return apiPost<Offer>(ENDPOINTS.offer.list, payload, { token });
 }
 
-export function updateOffer(id: string, payload: Partial<OfferPayload>, token: string) {
+export function updateOffer(
+  id: string,
+  payload: Partial<OfferPayload>,
+  token: string,
+) {
   return apiPatch<Offer>(ENDPOINTS.offer.byId(id), payload, { token });
 }
 

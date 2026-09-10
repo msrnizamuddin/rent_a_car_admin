@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Search, Plus, ImageOff } from "lucide-react";
 import { useOffers } from "@/hooks/useOffers";
@@ -16,7 +16,7 @@ const tripTypeLabel: Record<string, string> = {
   discount_trip: "Discount Trip",
 };
 
-function formatDate(value?: string) {
+function formatDate(value?: string | null) {
   if (!value) return "—";
   return new Date(value).toLocaleDateString("en-GB", {
     day: "2-digit",
@@ -27,10 +27,17 @@ function formatDate(value?: string) {
 
 export default function OfferList() {
   const [search, setSearch] = useState("");
-  const { offers, pagination, loading, error } = useOffers({
-    search: search || undefined,
-    limit: 50,
-  });
+  const { offers, loading, error } = useOffers();
+
+  const filteredOffers = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return offers;
+    return offers.filter((o) =>
+      [o.title, o.subtitle, o.fromLocation, o.toLocation]
+        .filter(Boolean)
+        .some((field) => field!.toLowerCase().includes(q)),
+    );
+  }, [offers, search]);
 
   return (
     <div>
@@ -38,7 +45,7 @@ export default function OfferList() {
         <div>
           <h1 className="text-xl font-semibold text-slate-900">Offers</h1>
           <p className="text-sm text-slate-500">
-            {pagination?.total ?? offers.length} total offers
+            {filteredOffers.length} total offers
           </p>
         </div>
 
@@ -67,7 +74,7 @@ export default function OfferList() {
         <p className="text-sm text-slate-400">Loading offers…</p>
       ) : error ? (
         <p className="text-sm text-red-500">Couldn&apos;t load offers.</p>
-      ) : offers.length === 0 ? (
+      ) : filteredOffers.length === 0 ? (
         <p className="text-sm text-slate-400">No offers found.</p>
       ) : (
         <div className="overflow-x-auto rounded-2xl border border-slate-100">
@@ -83,14 +90,14 @@ export default function OfferList() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {offers.map((o) => (
+              {filteredOffers.map((o) => (
                 <tr key={o.id} className="hover:bg-slate-50/60 transition">
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-3">
-                      {o.bannerUrl ? (
+                      {o.bannerImage ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
-                          src={o.bannerUrl}
+                          src={o.bannerImage}
                           alt={o.title}
                           className="w-12 h-9 rounded-lg object-cover shrink-0 bg-slate-100"
                         />
@@ -112,17 +119,19 @@ export default function OfferList() {
                     </div>
                   </td>
                   <td className="py-3 px-4 text-slate-600 whitespace-nowrap">
-                    {o.fromLocation} → {o.toLocation}
+                    {o.fromLocation || "—"} → {o.toLocation || "—"}
                   </td>
                   <td className="py-3 px-4">
                     <span className="px-2.5 py-1 rounded-full bg-slate-100 text-xs font-medium">
-                      {tripTypeLabel[o.tripType] || o.tripType}
+                      {(o.tripType && tripTypeLabel[o.tripType]) ||
+                        o.tripType ||
+                        "—"}
                     </span>
                   </td>
                   <td className="py-3 px-4 text-slate-600 whitespace-nowrap">
                     {o.discountType === "percentage"
-                      ? `${o.discountValue}%`
-                      : `৳${o.discountValue}`}
+                      ? `${Number(o.discountValue)}%`
+                      : `৳${Number(o.discountValue)}`}
                   </td>
                   <td className="py-3 px-4 text-slate-600 whitespace-nowrap">
                     {formatDate(o.startDate)} – {formatDate(o.endDate)}
@@ -130,10 +139,10 @@ export default function OfferList() {
                   <td className="py-3 px-4">
                     <span
                       className={`px-2.5 py-1 rounded-full text-xs font-medium capitalize ${
-                        statusStyle[o.isActive ? "active" : "inactive"]
+                        statusStyle[o.status]
                       }`}
                     >
-                      {o.isActive ? "Active" : "Inactive"}
+                      {o.status === "active" ? "Active" : "Inactive"}
                     </span>
                   </td>
                 </tr>
