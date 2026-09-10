@@ -9,6 +9,7 @@ import {
   BarChart3,
   Settings,
   Globe,
+  ShieldCheck,
 } from "lucide-react";
 
 export type SubMenuItem = {
@@ -23,6 +24,9 @@ export type MenuItem = {
   icon: LucideIcon;
   href: string;
   submenu?: SubMenuItem[];
+  // Only superadmin creates other admin accounts / grants permissions —
+  // Sidebar hides this item entirely for anyone else.
+  superadminOnly?: boolean;
 };
 
 // Every href below routes to a real, backend-wired page — no dead links.
@@ -92,6 +96,17 @@ export const menuConfig: MenuItem[] = [
       { label: "Add price configuration", href: "/dashboard/price-configuration/new" },
       { label: "Tourist Spots", href: "/dashboard/tourist-spots" },
       { label: "Add tourist spot", href: "/dashboard/tourist-spots/new" },
+    ],
+  },
+  {
+    key: "admin-users",
+    label: "Admin Users",
+    icon: ShieldCheck,
+    href: "/dashboard/admin-users",
+    superadminOnly: true,
+    submenu: [
+      { label: "All admin users", href: "/dashboard/admin-users" },
+      { label: "Add admin user", href: "/dashboard/admin-users/new" },
     ],
   },
 ];

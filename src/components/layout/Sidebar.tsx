@@ -16,7 +16,7 @@ type TooltipState = { label: string; top: number; left: number } | null;
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { logout } = useAuth();
+  const { role, logout } = useAuth();
   const [openKey, setOpenKey] = useState<string | null>(null);
   const [tooltip, setTooltip] = useState<TooltipState>(null);
 
@@ -25,7 +25,8 @@ export default function Sidebar() {
     router.push("/login");
   };
 
-  const allItems = useMemo(() => [...menuConfig, ...bottomMenuConfig], []);
+  const visibleMenu = menuConfig.filter((item) => !item.superadminOnly || role === "superadmin");
+  const allItems = [...visibleMenu, ...bottomMenuConfig];
   const activeItem = allItems.find((i) => i.key === openKey);
 
   const isActive = (item: MenuItem) =>
@@ -57,11 +58,10 @@ export default function Sidebar() {
     const Icon = item.icon;
     const active = openKey === item.key || isActive(item);
 
-    const className = `relative w-16 h-[58px] rounded-2xl flex flex-col items-center justify-center gap-1 transition-all duration-200 ease-out ${
-      active
+    const className = `relative w-16 h-[58px] rounded-2xl flex flex-col items-center justify-center gap-1 transition-all duration-200 ease-out ${active
         ? "bg-gradient-to-b from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30"
         : "text-slate-500 hover:bg-slate-100 hover:text-slate-900"
-    }`;
+      }`;
 
     const content = (
       <>
@@ -70,9 +70,8 @@ export default function Sidebar() {
           {/* Submenu indicator — small dot so it's obvious this item opens a panel */}
           {item.submenu && (
             <span
-              className={`absolute -top-1 -right-1.5 w-[7px] h-[7px] rounded-full ring-2 ${
-                active ? "bg-white ring-blue-500" : "bg-blue-500 ring-white"
-              }`}
+              className={`absolute -top-1 -right-1.5 w-[7px] h-[7px] rounded-full ring-2 ${active ? "bg-white ring-blue-500" : "bg-blue-500 ring-white"
+                }`}
             />
           )}
         </div>
@@ -127,23 +126,20 @@ export default function Sidebar() {
     const content = (
       <>
         <div
-          className={`flex items-center justify-center w-9 h-9 rounded-full transition-all duration-300 ease-out ${
-            active
+          className={`flex items-center justify-center w-9 h-9 rounded-full transition-all duration-300 ease-out ${active
               ? "bg-blue-600 shadow-md shadow-blue-500/40 scale-105"
               : "scale-100"
-          }`}
+            }`}
         >
           <Icon
-            className={`w-[18px] h-[18px] transition-colors ${
-              active ? "text-white" : "text-slate-400"
-            }`}
+            className={`w-[18px] h-[18px] transition-colors ${active ? "text-white" : "text-slate-400"
+              }`}
             strokeWidth={2.2}
           />
         </div>
         <span
-          className={`text-[10px] font-medium leading-none whitespace-nowrap transition-colors ${
-            active ? "text-blue-600" : "text-slate-400"
-          }`}
+          className={`text-[10px] font-medium leading-none whitespace-nowrap transition-colors ${active ? "text-blue-600" : "text-slate-400"
+            }`}
         >
           {item.label}
         </span>
@@ -185,10 +181,8 @@ export default function Sidebar() {
           <Car className="w-5 h-5 text-white" strokeWidth={2.5} />
         </Link>
 
-        <nav className="flex-1 flex flex-col items-center gap-2.5">
-          {menuConfig.map((item) => (
-            <DesktopIcon key={item.key} item={item} />
-          ))}
+        <nav className="flex-1 flex flex-col items-center gap-1">
+          {visibleMenu.map(renderIcon)}
         </nav>
 
         <div className="flex flex-col items-center gap-2.5 pt-3 shrink-0 border-t border-slate-100 w-full">
@@ -244,9 +238,8 @@ export default function Sidebar() {
 
         {/* Nav row */}
         <div
-          className={`flex items-stretch gap-2 px-4 py-2 overflow-x-auto scroll-smooth snap-x snap-mandatory no-scrollbar scroll-px-4 ${
-            activeItem?.submenu ? "border-t border-slate-100" : ""
-          }`}
+          className={`flex items-stretch gap-2 px-4 py-2 overflow-x-auto scroll-smooth snap-x snap-mandatory no-scrollbar scroll-px-4 ${activeItem?.submenu ? "border-t border-slate-100" : ""
+            }`}
         >
           {menuConfig.map((item) => (
             <MobileIcon key={item.key} item={item} />
