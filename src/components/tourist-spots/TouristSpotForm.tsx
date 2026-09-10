@@ -11,37 +11,10 @@ import {
 } from "@/services/touristSpotService";
 import { formatApiError } from "@/lib/errorMessages";
 import ImageUpload from "@/components/shared/ImageUpload";
-
-const inputClass =
-  "w-full h-11 pl-11 pr-4 rounded-xl bg-slate-50 border border-slate-200 text-sm text-black placeholder:text-black outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition";
-
-const textareaClass =
-  "w-full pl-11 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm text-black placeholder:text-black outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition resize-none";
-
-const labelClass = "text-xs font-medium text-black mb-1.5 block";
-
-function Field({
-  label,
-  icon: Icon,
-  children,
-}: {
-  label: string;
-  icon: React.ElementType;
-  children: React.ReactNode;
-}) {
-  return (
-    <div>
-      <label className={labelClass}>{label}</label>
-      <div className="relative">
-        <Icon className="absolute left-3.5 top-3.5 w-4 h-4 text-black" />
-        {children}
-      </div>
-    </div>
-  );
-}
+import FormField from "@/components/shared/FormField";
+import FormLabel from "@/components/shared/FormLabel";
 
 type TouristSpotFormProps = {
-  // Present in edit mode — PATCHes the existing spot instead of creating one.
   touristSpotId?: string;
 };
 
@@ -52,7 +25,9 @@ const emptyForm = {
   status: "active" as "active" | "inactive",
 };
 
-export default function TouristSpotForm({ touristSpotId }: TouristSpotFormProps) {
+export default function TouristSpotForm({
+  touristSpotId,
+}: TouristSpotFormProps) {
   const router = useRouter();
   const { token } = useAuth();
   const isEdit = Boolean(touristSpotId);
@@ -77,7 +52,9 @@ export default function TouristSpotForm({ touristSpotId }: TouristSpotFormProps)
         });
         setImage(spot.image || null);
       })
-      .catch((err) => setError(formatApiError(err, "Could not load tourist spot.")))
+      .catch((err) =>
+        setError(formatApiError(err, "Could not load tourist spot.")),
+      )
       .finally(() => setLoading(false));
   }, [touristSpotId, token]);
 
@@ -115,7 +92,9 @@ export default function TouristSpotForm({ touristSpotId }: TouristSpotFormProps)
       }
       router.push("/dashboard/tourist-spots");
     } catch (err) {
-      setError(formatApiError(err, "Could not save tourist spot, please try again."));
+      setError(
+        formatApiError(err, "Could not save tourist spot, please try again."),
+      );
     } finally {
       setSubmitting(false);
     }
@@ -139,37 +118,35 @@ export default function TouristSpotForm({ touristSpotId }: TouristSpotFormProps)
       </div>
 
       <form onSubmit={handleSubmit} className="max-w-3xl space-y-6">
-        <Field label="Name" icon={Type}>
-          <input
-            required
-            value={form.name}
-            onChange={update("name")}
-            placeholder="Cox's Bazar"
-            className={inputClass}
-          />
-        </Field>
+        <FormField
+          label="Name"
+          icon={Type}
+          required
+          value={form.name}
+          onChange={update("name")}
+          placeholder="Cox's Bazar"
+        />
 
-        <Field label="Location (optional)" icon={MapPin}>
-          <input
-            value={form.location}
-            onChange={update("location")}
-            placeholder="Chattogram, Bangladesh"
-            className={inputClass}
-          />
-        </Field>
+        <FormField
+          label="Location (optional)"
+          icon={MapPin}
+          value={form.location}
+          onChange={update("location")}
+          placeholder="Chattogram, Bangladesh"
+        />
 
-        <Field label="Description (optional)" icon={AlignLeft}>
-          <textarea
-            rows={3}
-            value={form.description}
-            onChange={update("description")}
-            placeholder="Longest natural sea beach in the world."
-            className={textareaClass}
-          />
-        </Field>
+        <FormField
+          as="textarea"
+          label="Description (optional)"
+          icon={AlignLeft}
+          rows={3}
+          value={form.description}
+          onChange={update("description")}
+          placeholder="Longest natural sea beach in the world."
+        />
 
         <div>
-          <label className={labelClass}>Status</label>
+          <FormLabel>Status</FormLabel>
           <div className="flex gap-2 max-w-xs">
             <button
               type="button"
@@ -184,7 +161,9 @@ export default function TouristSpotForm({ touristSpotId }: TouristSpotFormProps)
             </button>
             <button
               type="button"
-              onClick={() => setForm((prev) => ({ ...prev, status: "inactive" }))}
+              onClick={() =>
+                setForm((prev) => ({ ...prev, status: "inactive" }))
+              }
               className={`flex-1 h-11 rounded-xl text-sm font-semibold transition ${
                 form.status === "inactive"
                   ? "bg-slate-700 text-white"
@@ -197,7 +176,7 @@ export default function TouristSpotForm({ touristSpotId }: TouristSpotFormProps)
         </div>
 
         <div>
-          <label className={labelClass}>Spot image / banner (optional)</label>
+          <FormLabel>Spot image / banner (optional)</FormLabel>
           <ImageUpload
             value={image}
             category="tourist_spot"

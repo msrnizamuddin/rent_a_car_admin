@@ -60,7 +60,9 @@ export default function GlobalSearch() {
     if (!allVehicles || trimmed.length < 2) return [];
     const q = trimmed.toLowerCase();
     return allVehicles.filter((v) =>
-      `${v.brand} ${v.vehicleName} ${v.registrationNumber}`.toLowerCase().includes(q),
+      `${v.brand} ${v.vehicleName} ${v.registrationNumber}`
+        .toLowerCase()
+        .includes(q),
     );
   }, [allVehicles, trimmed]);
 
@@ -79,11 +81,20 @@ export default function GlobalSearch() {
         listUsers({ role: "customer", search: trimmed, limit: 5 }, token),
       ]).then(([driverRes, customerRes]) => {
         setPeople({
-          drivers: driverRes.status === "fulfilled" ? driverRes.value.users || [] : [],
-          driverTotal: driverRes.status === "fulfilled" ? driverRes.value.pagination?.total ?? 0 : 0,
-          customers: customerRes.status === "fulfilled" ? customerRes.value.users || [] : [],
+          drivers:
+            driverRes.status === "fulfilled" ? driverRes.value.users || [] : [],
+          driverTotal:
+            driverRes.status === "fulfilled"
+              ? (driverRes.value.pagination?.total ?? 0)
+              : 0,
+          customers:
+            customerRes.status === "fulfilled"
+              ? customerRes.value.users || []
+              : [],
           customerTotal:
-            customerRes.status === "fulfilled" ? customerRes.value.pagination?.total ?? 0 : 0,
+            customerRes.status === "fulfilled"
+              ? (customerRes.value.pagination?.total ?? 0)
+              : 0,
         });
         setLoading(false);
       });
@@ -95,7 +106,10 @@ export default function GlobalSearch() {
   // Close on outside click / Escape.
   useEffect(() => {
     function handleClick(e: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
+      ) {
         setOpen(false);
       }
     }
@@ -116,12 +130,15 @@ export default function GlobalSearch() {
   };
 
   const hasQuery = trimmed.length >= 2;
-  const hasResults = vehicleMatches.length > 0 || people.drivers.length > 0 || people.customers.length > 0;
+  const hasResults =
+    vehicleMatches.length > 0 ||
+    people.drivers.length > 0 ||
+    people.customers.length > 0;
   const showDropdown = open && hasQuery;
 
   return (
     <div ref={containerRef} className="relative w-full max-w-[320px]">
-      <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-black pointer-events-none" />
+      <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
       <input
         type="text"
         value={query}
@@ -134,7 +151,7 @@ export default function GlobalSearch() {
           if (e.key === "Enter" && hasQuery) goToList("/dashboard/vehicles");
         }}
         placeholder="Search vehicles, drivers, customers…"
-        className="w-full h-10 pl-10 pr-9 rounded-xl bg-slate-50 border border-slate-200 text-sm text-black placeholder:text-black outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition"
+        className="w-full h-10 pl-10 pr-9 rounded-xl bg-slate-50 border border-slate-200 text-sm text-black placeholder:text-slate-400 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition"
       />
       {query && (
         <button
@@ -274,7 +291,9 @@ function ResultRow({
       className="flex flex-col px-2 py-2 rounded-xl text-sm hover:bg-slate-50 transition"
     >
       <span className="font-medium text-black truncate">{title}</span>
-      {subtitle && <span className="text-xs text-black truncate">{subtitle}</span>}
+      {subtitle && (
+        <span className="text-xs text-black truncate">{subtitle}</span>
+      )}
     </Link>
   );
 }
