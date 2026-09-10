@@ -182,7 +182,9 @@ export default function Sidebar() {
         </Link>
 
         <nav className="flex-1 flex flex-col items-center gap-1">
-          {visibleMenu.map(renderIcon)}
+          {visibleMenu.map((item) => (
+            <DesktopIcon key={item.key} item={item} />
+          ))}
         </nav>
 
         <div className="flex flex-col items-center gap-2.5 pt-3 shrink-0 border-t border-slate-100 w-full">
@@ -241,7 +243,7 @@ export default function Sidebar() {
           className={`flex items-stretch gap-2 px-4 py-2 overflow-x-auto scroll-smooth snap-x snap-mandatory no-scrollbar scroll-px-4 ${activeItem?.submenu ? "border-t border-slate-100" : ""
             }`}
         >
-          {menuConfig.map((item) => (
+          {visibleMenu.map((item) => (
             <MobileIcon key={item.key} item={item} />
           ))}
           {bottomMenuConfig.map((item) => (
