@@ -11,7 +11,7 @@ import { useAuth } from "@/context/AuthContext";
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { logout } = useAuth();
+  const { role, logout } = useAuth();
   const [openKey, setOpenKey] = useState<string | null>(null);
 
   const handleLogout = () => {
@@ -19,7 +19,8 @@ export default function Sidebar() {
     router.push("/login");
   };
 
-  const allItems = [...menuConfig, ...bottomMenuConfig];
+  const visibleMenu = menuConfig.filter((item) => !item.superadminOnly || role === "superadmin");
+  const allItems = [...visibleMenu, ...bottomMenuConfig];
   const activeItem = allItems.find((i) => i.key === openKey);
 
   const renderIcon = (item: (typeof allItems)[number]) => {
@@ -73,7 +74,7 @@ export default function Sidebar() {
         </Link>
 
         <nav className="flex-1 flex flex-col items-center gap-1">
-          {menuConfig.map(renderIcon)}
+          {visibleMenu.map(renderIcon)}
         </nav>
 
         <div className="flex flex-col items-center gap-1 pt-2 shrink-0">

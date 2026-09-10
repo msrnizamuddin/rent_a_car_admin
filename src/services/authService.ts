@@ -46,6 +46,9 @@ export type CreateStaffPayload = {
   identification?: Record<string, unknown>;
   drivingLicense?: Record<string, unknown>;
   profilePicture?: string;
+  // Only accepted by the backend when role is "manager" — the fixed set of
+  // module access flags (see permissions.constants.ts).
+  permissions?: Record<string, boolean>;
 };
 
 export function createStaff(payload: CreateStaffPayload, token: string) {
